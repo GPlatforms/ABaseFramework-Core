@@ -26,7 +26,7 @@ class OkHttpClientManager {
 
 
         val okHttpClient = OkHttpClient.Builder()
-                .hostnameVerifier { hostname, session -> true }
+                .hostnameVerifier { _, _ -> true }
                 .addInterceptor(headerInterceptor)
                 .addInterceptor(logInterceptor)
                 .cache(getOkHttpCache())

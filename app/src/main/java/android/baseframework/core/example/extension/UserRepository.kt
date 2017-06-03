@@ -2,10 +2,10 @@ package android.baseframework.core.example.extension
 
 import android.baseframework.core.repository.config.RetrofitManager
 import android.baseframework.leancloud.repository.UserRepository
-import okhttp3.RequestBody
 import android.baseframework.leancloud.repository.json.LCUser
 import io.reactivex.Observable
 import okhttp3.MediaType
+import okhttp3.RequestBody
 
 
 fun UserRepository.login(): Observable<LCUser> {

@@ -42,7 +42,7 @@ class RxRetrofitCache {
     fun <T> loadCacheOnly(cacheKey: String, type: Type): T? {
         val cache = CacheLess.`$get`(cacheKey, Constant.TIME_ONE_HOUR * 10000)
         if (!TextUtils.isEmpty(cache)) {
-            var result: T? = null
+            var result: T?
             try {
                 result = Gson().fromJson<T>(cache, type)
             } catch (e: Exception) {
