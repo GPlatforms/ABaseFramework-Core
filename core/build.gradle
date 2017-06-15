@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 25
@@ -28,7 +29,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation 'com.android.support:appcompat-v7:25.3.1'
 
     implementation 'com.jayfeng:lesscode-core:2.0'
@@ -53,3 +53,5 @@ repositories {
 }
 
 apply from: 'kotlin-bintray.gradle'
+buildscript {
+}
