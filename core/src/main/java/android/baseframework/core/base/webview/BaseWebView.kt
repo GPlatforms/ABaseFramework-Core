@@ -3,21 +3,19 @@ package android.baseframework.core.base.webview
 import android.baseframework.core.BuildConfig
 import android.content.Context
 import android.util.AttributeSet
-import android.webkit.WebView
-import android.webkit.WebSettings
 import android.os.Build
-import android.webkit.CookieManager
-import android.webkit.DownloadListener
-import android.view.ViewGroup
+import android.webkit.*
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
-open class BaseWebView : WebView {
+class BaseWebView : WebView {
 
-    val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(context)
-    val webViewClient: BaseWebViewClient = BaseWebViewClient(context)
+    private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(context)
+    private val webViewClient: BaseWebViewClient = BaseWebViewClient(context)
+    private val lifecycle : BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
+    private val jsCaller : JsCaller = JsCaller(this@BaseWebView)
 
     constructor(context: Context) : super(context)
 
@@ -32,7 +30,7 @@ open class BaseWebView : WebView {
         initSetting()
     }
 
-    fun initSetting() {
+    private fun initSetting() {
         settings.javaScriptEnabled = true
         settings.setSupportZoom(true)
         settings.javaScriptCanOpenWindowsAutomatically = true
@@ -60,9 +58,17 @@ open class BaseWebView : WebView {
         }
         setWebViewClient(webViewClient)
         setWebChromeClient(webViewChromeClient)
-        setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+        setDownloadListener({ url, userAgent, contentDisposition, mimetype, contentLength ->
             TODO("implement base download actions in BaseWebView")
         })
+    }
+
+    fun callJs(js: String) {
+        jsCaller.callJs(js)
+    }
+
+    fun callJs(js: String, callback: ValueCallback<String>) {
+        jsCaller.callJs(js, callback)
     }
 
     fun addUrlHandler(listener: IUrlListener) {
@@ -73,68 +79,15 @@ open class BaseWebView : WebView {
         webViewChromeClient.addChromeListener(listener)
     }
 
-    override fun onResume() {
-        super.onResume()
-        resumeTimers()
+    fun doPause() {
+        lifecycle.onPause()
     }
 
-    override fun onPause() {
-        super.onPause()
-        pauseTimers()
+    fun doResume() {
+        lifecycle.onResume()
     }
 
-    fun onDestroy() {
-        releaseCallback()
-        try {
-            (parent as ViewGroup).removeView(this@BaseWebView)
-        } catch (ignored: Exception) {
-        }
-        try {
-            removeAllViews()
-        } catch (ignored: Exception) {
-        }
-        destroy()
+    fun doDestroy() {
+        lifecycle.onDestroy()
     }
-
-    fun releaseCallback() {
-        if (android.os.Build.VERSION.SDK_INT < 16) {
-            try {
-                var field = WebView::class.java.getDeclaredField("mWebViewCore")
-                field = field.type.getDeclaredField("mBrowserFrame")
-                field = field.type.getDeclaredField("sConfigCallback")
-                field.isAccessible = true
-                field.set(null, null)
-            } catch (e: NoSuchFieldException) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            } catch (e: IllegalAccessException) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            }
-        } else {
-            try {
-                val sConfigCallback = Class.forName("android.webkit.BrowserFrame").getDeclaredField("sConfigCallback")
-                if (sConfigCallback != null) {
-                    sConfigCallback.isAccessible = true
-                    sConfigCallback.set(null, null)
-                }
-            } catch (e: NoSuchFieldException) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            } catch (e: ClassNotFoundException) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            } catch (e: IllegalAccessException) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            }
-
-        }
-    }
-
 }

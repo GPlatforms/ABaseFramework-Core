@@ -6,14 +6,16 @@ import android.net.Uri
 import android.os.Message
 import android.view.View
 import android.webkit.*
+import java.util.HashMap
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
-class BaseWebChromeClient(context: Context): WebChromeClient() {
+class BaseWebChromeClient(context: Context) : WebChromeClient() {
 
     private var chromeHandler: ChromeHandler = ChromeHandler(context)
+    private var mJsCallJavas: MutableMap<String, JavaCaller> = HashMap()
 
     fun addChromeListener(listener: IChromeListener) {
         chromeHandler.addUrlListener(listener)
@@ -24,7 +26,7 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun onRequestFocus(view: WebView?) {
-        if(!chromeHandler.onRequestFocus(view)) {
+        if (!chromeHandler.onRequestFocus(view)) {
             super.onRequestFocus(view)
         }
     }
@@ -33,25 +35,36 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
         return chromeHandler.onJsAlert(view, url, message, result) || super.onJsAlert(view, url, message, result)
     }
 
-    override fun onJsPrompt(view: WebView?, url: String?, message: String?, defaultValue: String?, result: JsPromptResult?): Boolean {
-        return chromeHandler.onJsPrompt(view, url, message, defaultValue, result)
-                || super.onJsPrompt(view, url, message, defaultValue, result)
+    override fun onJsPrompt(view: WebView?, url: String?, message: String?, defaultValue: String?,
+                            result: JsPromptResult?): Boolean {
+        if (chromeHandler.onJsPrompt(view, url, message, defaultValue, result)) {
+            return true
+        } else if (JavaCaller.isSafeWebViewCallMsg(message)) {
+            val jsonObject = JavaCaller.getMsgJSONObject(message)
+            val interfacedName = JavaCaller.getInterfacedName(jsonObject)
+            val jsCallJava = mJsCallJavas.get(interfacedName)
+            if (jsCallJava != null && view != null) {
+                result?.confirm(jsCallJava.call(view, jsonObject))
+            }
+            return true
+        }
+        return false
     }
 
     override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
-        if(!chromeHandler.onShowCustomView(view, callback)) {
+        if (!chromeHandler.onShowCustomView(view, callback)) {
             super.onShowCustomView(view, callback)
         }
     }
 
     override fun onGeolocationPermissionsShowPrompt(origin: String?, callback: GeolocationPermissions.Callback?) {
-        if(!chromeHandler.onGeolocationPermissionsShowPrompt(origin, callback)) {
+        if (!chromeHandler.onGeolocationPermissionsShowPrompt(origin, callback)) {
             super.onGeolocationPermissionsShowPrompt(origin, callback)
         }
     }
 
     override fun onPermissionRequest(request: PermissionRequest?) {
-        if(!chromeHandler.onPermissionRequest(request)) {
+        if (!chromeHandler.onPermissionRequest(request)) {
             super.onPermissionRequest(request)
         }
     }
@@ -61,7 +74,7 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun onPermissionRequestCanceled(request: PermissionRequest?) {
-        if(!chromeHandler.onPermissionRequestCanceled(request)) {
+        if (!chromeHandler.onPermissionRequestCanceled(request)) {
             super.onPermissionRequestCanceled(request)
         }
     }
@@ -72,25 +85,25 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun onReceivedTouchIconUrl(view: WebView?, url: String?, precomposed: Boolean) {
-        if(!chromeHandler.onReceivedTouchIconUrl(view, url, precomposed)) {
+        if (!chromeHandler.onReceivedTouchIconUrl(view, url, precomposed)) {
             super.onReceivedTouchIconUrl(view, url, precomposed)
         }
     }
 
     override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
-        if(!chromeHandler.onReceivedIcon(view, icon)) {
+        if (!chromeHandler.onReceivedIcon(view, icon)) {
             super.onReceivedIcon(view, icon)
         }
     }
 
     override fun onReceivedTitle(view: WebView?, title: String?) {
-        if(!chromeHandler.onReceivedTitle(view, title)) {
+        if (!chromeHandler.onReceivedTitle(view, title)) {
             super.onReceivedTitle(view, title)
         }
     }
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
-        if(!chromeHandler.onProgressChanged(view, newProgress)) {
+        if (!chromeHandler.onProgressChanged(view, newProgress)) {
             super.onProgressChanged(view, newProgress)
         }
     }
@@ -100,13 +113,13 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
-        if(!chromeHandler.getVisitedHistory(callback)) {
+        if (!chromeHandler.getVisitedHistory(callback)) {
             super.getVisitedHistory(callback)
         }
     }
 
     override fun onGeolocationPermissionsHidePrompt() {
-        if(!chromeHandler.onGeolocationPermissionsHidePrompt()) {
+        if (!chromeHandler.onGeolocationPermissionsHidePrompt()) {
             super.onGeolocationPermissionsHidePrompt()
         }
     }
@@ -117,7 +130,7 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun onHideCustomView() {
-        if(!chromeHandler.onHideCustomView()) {
+        if (!chromeHandler.onHideCustomView()) {
             super.onHideCustomView()
         }
     }
@@ -128,7 +141,7 @@ class BaseWebChromeClient(context: Context): WebChromeClient() {
     }
 
     override fun onCloseWindow(window: WebView?) {
-        if(!chromeHandler.onCloseWindow(window)) {
+        if (!chromeHandler.onCloseWindow(window)) {
             super.onCloseWindow(window)
         }
     }

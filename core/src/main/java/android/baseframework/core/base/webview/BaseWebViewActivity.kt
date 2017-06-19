@@ -5,6 +5,7 @@ import android.baseframework.core.base.BaseCoreActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import kotlinx.android.synthetic.main.activity_base_webview.*
@@ -80,6 +81,14 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         webView.addChromeHandler(listener)
     }
 
+    fun loadJs(js: String) {
+        webView.callJs(js)
+    }
+
+    fun loadJs(js: String, callback: ValueCallback<String>) {
+        webView.callJs(js, callback)
+    }
+
     fun loadUrl(url: String) {
         webView.loadUrl(url)
     }
@@ -98,16 +107,16 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
 
     override fun onPause() {
         super.onPause()
-        webView.onPause()
+        webView.doPause()
     }
 
     override fun onResume() {
         super.onResume()
-        webView.onResume()
+        webView.doResume()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        webView.onDestroy()
+        webView.doDestroy()
     }
 }
