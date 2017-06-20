@@ -2,6 +2,7 @@ package android.baseframework.core.base.webview
 
 import android.baseframework.core.BuildConfig
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.os.Build
 import android.webkit.*
@@ -14,8 +15,8 @@ class BaseWebView : WebView {
 
     private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(context)
     private val webViewClient: BaseWebViewClient = BaseWebViewClient(context)
-    private val lifecycle : BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
-    private val jsCaller : JsCaller = JsCaller(this@BaseWebView)
+    private val lifecycle: BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
+    private val jsCaller: JsCaller = JsCaller(this@BaseWebView)
 
     constructor(context: Context) : super(context)
 
@@ -46,21 +47,34 @@ class BaseWebView : WebView {
         settings.databaseEnabled = true
         settings.setGeolocationEnabled(true)
         settings.allowContentAccess = true
-        if (Build.VERSION.SDK_INT < 18) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
+                || Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            removeJavascriptInterface("searchBoxJavaBridge_")
+            removeJavascriptInterface("accessibility")
+            removeJavascriptInterface("accessibilityTraversal")
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         }
-        if (Build.VERSION.SDK_INT < 19) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             settings.setDatabasePath(context.filesDir.path);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            addJavascriptInterface(BaseJavaInterface(context), "Android")
+        }
         CookieManager.getInstance().setAcceptCookie(true);
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
         }
         setWebViewClient(webViewClient)
         setWebChromeClient(webViewChromeClient)
-        setDownloadListener({ url, userAgent, contentDisposition, mimetype, contentLength ->
+        setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
             TODO("implement base download actions in BaseWebView")
         })
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        webViewChromeClient.onActivityResult(requestCode, resultCode, data)
     }
 
     fun callJs(js: String) {

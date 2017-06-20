@@ -2,6 +2,7 @@ package android.baseframework.core.base.webview
 
 import android.baseframework.core.R
 import android.baseframework.core.base.BaseCoreActivity
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -9,6 +10,8 @@ import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import kotlinx.android.synthetic.main.activity_base_webview.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by Neil Zheng on 2017/6/15.
@@ -20,6 +23,7 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         val EXTRA_URL = "EXTRA_URL"
         val EXTRA_NEW_WINDOW = "EXTRA_NEW_WINDOW"
         val EXTRA_RECEIVE_TITLE = "EXTRA_RECEIVE_TITLE"
+        val REQUEST_UPLOAD_FILE = 3
     }
 
     var url: String? = null
@@ -39,6 +43,11 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         }
         newWindowFlag = intent.getBooleanExtra(EXTRA_NEW_WINDOW, false)
         receiveTitleFlag = intent.getBooleanExtra(EXTRA_RECEIVE_TITLE, true)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        webView.onActivityResult(requestCode, resultCode, data)
     }
 
     fun initWebView() {
@@ -71,6 +80,12 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
             }
         })
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: UploadFileEvent) {
+
+    }
+
 
     fun addUrlListener(listener: IUrlListener) {
         webView.addUrlHandler(listener)

@@ -1,2 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="android.baseframework.core" />
+<manifest package="android.baseframework.core"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <permission android:name="android.intent.action.CALL"/>
+
+</manifest>

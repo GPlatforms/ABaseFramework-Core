@@ -1,6 +1,8 @@
 package android.baseframework.core.base.webview
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Message
@@ -16,6 +18,7 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
 
     private var chromeHandler: ChromeHandler = ChromeHandler(context)
     private var mJsCallJavas: MutableMap<String, JavaCaller> = HashMap()
+    private var fileUploadHandler: UploadFileHandler = UploadFileHandler(context as Activity)
 
     fun addChromeListener(listener: IChromeListener) {
         chromeHandler.addUrlListener(listener)
@@ -51,6 +54,10 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
         return false
     }
 
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        fileUploadHandler.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
         if (!chromeHandler.onShowCustomView(view, callback)) {
             super.onShowCustomView(view, callback)
@@ -80,8 +87,11 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
     }
 
     override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
-        return chromeHandler.onShowFileChooser(webView, filePathCallback, fileChooserParams)
-                || super.onShowFileChooser(webView, filePathCallback, fileChooserParams)
+        if (chromeHandler.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
+            return true
+        } else {
+            return fileUploadHandler.chooseFile(filePathCallback, fileChooserParams)
+        }
     }
 
     override fun onReceivedTouchIconUrl(view: WebView?, url: String?, precomposed: Boolean) {
