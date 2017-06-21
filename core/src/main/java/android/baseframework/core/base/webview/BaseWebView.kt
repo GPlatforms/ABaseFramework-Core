@@ -78,11 +78,23 @@ class BaseWebView : WebView {
     }
 
     fun callJs(js: String) {
-        jsCaller.callJs(js)
+        jsCaller.quickCallJs(js)
     }
 
     fun callJs(js: String, callback: ValueCallback<String>) {
-        jsCaller.callJs(js, callback)
+        jsCaller.quickCallJs(js, callback)
+    }
+
+    fun quickCallJs(js: String) {
+        jsCaller.quickCallJs(js)
+    }
+
+    fun quickCallJs(js: String, callback: ValueCallback<String>?, vararg params: String) {
+        jsCaller.quickCallJs(js, callback, *params)
+    }
+
+    fun quickCallJs(js: String, vararg params: String) {
+        jsCaller.quickCallJs(js, null, *params)
     }
 
     fun addUrlHandler(listener: IUrlListener) {

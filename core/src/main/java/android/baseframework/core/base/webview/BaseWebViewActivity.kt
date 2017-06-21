@@ -10,8 +10,6 @@ import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import kotlinx.android.synthetic.main.activity_base_webview.*
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by Neil Zheng on 2017/6/15.
@@ -37,6 +35,58 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         initWebView()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        webView.onActivityResult(requestCode, resultCode, data)
+    }
+
+    protected fun addUrlListener(listener: IUrlListener) {
+        webView.addUrlHandler(listener)
+    }
+
+    protected fun addChromeListener(listener: IChromeListener) {
+        webView.addChromeHandler(listener)
+    }
+
+    protected fun loadUrl(url: String) {
+        webView.loadUrl(url)
+    }
+
+    protected fun loadJs(js: String) {
+        webView.quickCallJs(js)
+    }
+
+    protected fun loadJs(js: String, callback: ValueCallback<String>?, vararg params: String) {
+        webView.quickCallJs(js, callback, *params)
+    }
+
+    protected fun reload() {
+        webView.reload()
+    }
+
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        webView.doPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webView.doResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webView.doDestroy()
+    }
+
     private fun initIntentData() {
         if (intent.hasExtra(EXTRA_URL)) {
             url = intent.getStringExtra(EXTRA_URL)
@@ -45,14 +95,9 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         receiveTitleFlag = intent.getBooleanExtra(EXTRA_RECEIVE_TITLE, true)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        webView.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun initWebView() {
+    private fun initWebView() {
         addUrlListener(object : SimpleUrlListener() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 return false
             }
 
@@ -79,59 +124,5 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
                 return false
             }
         })
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEvent(event: UploadFileEvent) {
-
-    }
-
-
-    fun addUrlListener(listener: IUrlListener) {
-        webView.addUrlHandler(listener)
-    }
-
-    fun addChromeListener(listener: IChromeListener) {
-        var view = findViewById(R.id.webView)
-        webView.addChromeHandler(listener)
-    }
-
-    fun loadJs(js: String) {
-        webView.callJs(js)
-    }
-
-    fun loadJs(js: String, callback: ValueCallback<String>) {
-        webView.callJs(js, callback)
-    }
-
-    fun loadUrl(url: String) {
-        webView.loadUrl(url)
-    }
-
-    fun reload() {
-        webView.reload()
-    }
-
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        webView.doPause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        webView.doResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        webView.doDestroy()
     }
 }

@@ -89,12 +89,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+    fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.shouldOverrideUrlLoading(view, request)) {
+                    if (listener.shouldOverrideUrlLoading(view, url)) {
                         result = true
                         break
                     }

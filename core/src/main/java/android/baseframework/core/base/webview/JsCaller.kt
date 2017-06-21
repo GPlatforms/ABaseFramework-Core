@@ -84,7 +84,7 @@ class JsCaller(val webView: WebView) {
     }
 
     fun quickCallJs(method: String) {
-        this.quickCallJs(method, null, *(null as Array<String>))
+        this.quickCallJs(method, null)
     }
 
     fun isJson(param: String?): Boolean {

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Message
 import android.view.View
 import android.webkit.*
@@ -90,7 +91,7 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
         if (chromeHandler.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
             return true
         } else {
-            return fileUploadHandler.chooseFile(filePathCallback, fileChooserParams)
+            return fileUploadHandler.chooseFileWithArrayCallback(filePathCallback, fileChooserParams)
         }
     }
 

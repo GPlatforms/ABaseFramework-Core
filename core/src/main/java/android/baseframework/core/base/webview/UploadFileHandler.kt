@@ -1,14 +1,13 @@
 package android.baseframework.core.base.webview
 
 import android.app.Activity
-import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import android.webkit.WebView
+import com.orhanobut.logger.Logger
 
 /**
  * Created by Neil Zheng on 2017/6/19.
@@ -16,12 +15,16 @@ import android.webkit.WebView
 
 class UploadFileHandler(val activity: Activity) {
 
-    var arrayCallback: ValueCallback<Array<Uri>>? = null
-    var singleCallback: ValueCallback<Uri>? = null
+    var callback: ValueCallback<Array<Uri>>? = null
 
-    fun chooseFile(filePathCallback: ValueCallback<Array<Uri>>?,
-                   fileChooserParams: WebChromeClient.FileChooserParams?): Boolean {
-        arrayCallback = filePathCallback
+    fun chooseFileWithArrayCallback(filePathCallback: ValueCallback<Array<Uri>>?,
+                                    fileChooserParams: WebChromeClient.FileChooserParams?): Boolean {
+        callback = filePathCallback
+        chooseFile(fileChooserParams)
+        return true
+    }
+
+    private fun chooseFile(fileChooserParams: WebChromeClient.FileChooserParams?) {
         if (fileChooserParams != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.startActivityForResult(fileChooserParams.createIntent(), BaseWebViewActivity.REQUEST_UPLOAD_FILE)
         } else {
@@ -31,7 +34,6 @@ class UploadFileHandler(val activity: Activity) {
             activity.startActivityForResult(Intent.createChooser(intent, "File Chooser"),
                     BaseWebViewActivity.REQUEST_UPLOAD_FILE)
         }
-        return false
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -39,32 +41,15 @@ class UploadFileHandler(val activity: Activity) {
             return
         }
         if (resultCode == Activity.RESULT_CANCELED) {
-//            if (jsChannel) {
-//                mJsChannelCallback.call(null)
-//                return
-//            }
-            if (arrayCallback != null) {
-                arrayCallback!!.onReceiveValue(null)
+            if (callback != null) {
+                callback!!.onReceiveValue(null)
             }
-            if (singleCallback != null) {
-                singleCallback!!.onReceiveValue(null)
-            }
-            return
         }
         if (resultCode == Activity.RESULT_OK) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (arrayCallback == null) {
-                    return
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && callback != null) {
+                Logger.e("3")
                 val array: Array<Uri>? = handleData(data)
-                arrayCallback!!.onReceiveValue(if (array == null) arrayOf<Uri>() else array)
-//            } else if (jsChannel) {
-//                convertFileAndCallBack(handleData(data))
-            } else {
-                val mUri = data?.data
-                if (singleCallback != null) {
-                    singleCallback!!.onReceiveValue(mUri)
-                }
+                callback!!.onReceiveValue(array)
             }
         }
     }

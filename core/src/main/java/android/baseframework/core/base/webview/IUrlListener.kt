@@ -30,7 +30,7 @@ interface IUrlListener {
 
     fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float): Boolean
 
-    fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean
+    fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean
 
     fun onPageCommitVisible(view: WebView?, url: String?): Boolean
 
