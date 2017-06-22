@@ -58,4 +58,6 @@ abstract class SimpleChromeListener : IChromeListener {
                                 resultMsg: Message?): Boolean = false
 
     override fun onCloseWindow(window: WebView?): Boolean = false
+
+    override fun getVideoLoadingProgressView(): View? = null
 }

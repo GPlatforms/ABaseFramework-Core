@@ -506,6 +506,29 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
+    fun getVideoLoadingProgressView(): View? {
+        if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<View> {
+                var view: View? = null
+                for (listener in mListeners) {
+                    view = listener.getVideoLoadingProgressView()
+                    if (null != view) {
+                        break
+                    }
+                }
+                view
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return null
+    }
+
     fun runOnUiThread(task: Runnable) {
         if (Thread.currentThread() !== Looper.getMainLooper().thread) {
             handler.post(task)

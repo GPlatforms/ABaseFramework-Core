@@ -12,14 +12,14 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import android.webkit.*
 import android.support.v4.content.ContextCompat.startActivity
-
+import com.orhanobut.logger.Logger
 
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
-open class BaseWebViewClient(val context: Context) : WebViewClient() {
+open class BaseWebViewClient(val webView: WebView, val context: Context) : WebViewClient() {
 
     private var urlHandler: UrlHandler = UrlHandler(context)
 
@@ -103,6 +103,7 @@ open class BaseWebViewClient(val context: Context) : WebViewClient() {
 
     override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
         if (!urlHandler.onReceivedSslError(view, handler, error)) {
+            handler?.proceed()
             super.onReceivedSslError(view, handler, error)
         }
     }

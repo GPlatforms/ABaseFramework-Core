@@ -1,25 +1,28 @@
 package android.baseframework.core.base.webview
 
-import android.app.Activity
+import android.baseframework.core.R
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Message
+import android.view.LayoutInflater
 import android.view.View
 import android.webkit.*
+import com.orhanobut.logger.Logger
 import java.util.HashMap
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
-class BaseWebChromeClient(context: Context) : WebChromeClient() {
+class BaseWebChromeClient(val webView: WebView, context: Context) : WebChromeClient() {
 
     private var chromeHandler: ChromeHandler = ChromeHandler(context)
     private var mJsCallJavas: MutableMap<String, JavaCaller> = HashMap()
-    private var fileUploadHandler: UploadFileHandler = UploadFileHandler(context as Activity)
+    private var fileUploadHandler: UploadFileHandler = UploadFileHandler(context)
+    private var videoHandler: WebVideoHandler = WebVideoHandler(webView, context)
+    private var videoProgressView: View? = null
 
     fun addChromeListener(listener: IChromeListener) {
         chromeHandler.addUrlListener(listener)
@@ -61,7 +64,7 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
 
     override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
         if (!chromeHandler.onShowCustomView(view, callback)) {
-            super.onShowCustomView(view, callback)
+            videoHandler.onShowCustomView(view, callback)
         }
     }
 
@@ -140,8 +143,10 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
                 || super.onJsBeforeUnload(view, url, message, result)
     }
 
+
     override fun onHideCustomView() {
         if (!chromeHandler.onHideCustomView()) {
+            videoHandler.onHideCustomView()
             super.onHideCustomView()
         }
     }
@@ -155,5 +160,26 @@ class BaseWebChromeClient(context: Context) : WebChromeClient() {
         if (!chromeHandler.onCloseWindow(window)) {
             super.onCloseWindow(window)
         }
+    }
+
+    override fun getVideoLoadingProgressView(): View {
+        var view = chromeHandler.getVideoLoadingProgressView()
+        if (null != view) {
+            return view
+        } else {
+            view = getDefaultVideoLoadingProgressView()
+            if (null != view) {
+                return view
+            }
+        }
+        return super.getVideoLoadingProgressView()
+    }
+
+    private fun getDefaultVideoLoadingProgressView(): View? {
+        if (videoProgressView == null) {
+            videoProgressView = LayoutInflater.from(webView.context).inflate(R.layout.layout_video_progress, null)
+            TODO("style the VideoProgress layout")
+        }
+        return videoProgressView;
     }
 }

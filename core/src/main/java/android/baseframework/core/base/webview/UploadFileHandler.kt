@@ -1,6 +1,7 @@
 package android.baseframework.core.base.webview
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -13,9 +14,16 @@ import com.orhanobut.logger.Logger
  * Created by Neil Zheng on 2017/6/19.
  */
 
-class UploadFileHandler(val activity: Activity) {
+class UploadFileHandler(val context: Context) {
 
+    var activity: Activity? = null
     var callback: ValueCallback<Array<Uri>>? = null
+
+    init {
+        if(context is Activity) {
+            activity = context
+        }
+    }
 
     fun chooseFileWithArrayCallback(filePathCallback: ValueCallback<Array<Uri>>?,
                                     fileChooserParams: WebChromeClient.FileChooserParams?): Boolean {
@@ -26,12 +34,12 @@ class UploadFileHandler(val activity: Activity) {
 
     private fun chooseFile(fileChooserParams: WebChromeClient.FileChooserParams?) {
         if (fileChooserParams != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.startActivityForResult(fileChooserParams.createIntent(), BaseWebViewActivity.REQUEST_UPLOAD_FILE)
+            activity?.startActivityForResult(fileChooserParams.createIntent(), BaseWebViewActivity.REQUEST_UPLOAD_FILE)
         } else {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "*/*"
-            activity.startActivityForResult(Intent.createChooser(intent, "File Chooser"),
+            activity?.startActivityForResult(Intent.createChooser(intent, "File Chooser"),
                     BaseWebViewActivity.REQUEST_UPLOAD_FILE)
         }
     }

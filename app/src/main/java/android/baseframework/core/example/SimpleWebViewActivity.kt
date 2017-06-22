@@ -18,12 +18,13 @@ import android.widget.Toast
 class SimpleWebViewActivity : BaseWebViewActivity() {
 
     private var key = 0
-    val array = arrayOf("http://www.vip.com",
+    private val array = arrayOf("http://www.vip.com",
                         "https://h5.m.jd.com/active/download/download.html?channel=jd-msy1",
                         "file:///android_asset/upload_file/uploadfile.html",
                         "file:///android_asset/upload_file/jsuploadfile.html",
                         "file:///android_asset/js_interaction/hello.html",
-                        "http://m.youku.com/video/id_XODEzMjU1MTI4.html",
+                        "http://broken-links.com/tests/video/",
+                        "https://m.bilibili.com/video/av11484069.html",
                         "http://www.taobao.com",
                         "http://www.wandoujia.com/apps",
                         "file:///android_asset/sms/sms.html",
@@ -31,11 +32,10 @@ class SimpleWebViewActivity : BaseWebViewActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        key = getSharedPreferences("shared", 0).getInt("key", key)
-//        key %= array.size
-        key = 8
+        key = getSharedPreferences("shared", 0).getInt("key", key)
+        key %= array.size
         loadUrl(array[key])
-//        key++;
-//        getSharedPreferences("shared", 0).edit().putInt("key", key).apply()
+        key++;
+        getSharedPreferences("shared", 0).edit().putInt("key", key).apply()
     }
 }

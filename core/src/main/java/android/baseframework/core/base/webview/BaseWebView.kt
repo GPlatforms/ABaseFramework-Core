@@ -1,5 +1,6 @@
 package android.baseframework.core.base.webview
 
+import android.annotation.TargetApi
 import android.baseframework.core.BuildConfig
 import android.content.Context
 import android.content.Intent
@@ -13,8 +14,8 @@ import android.webkit.*
 
 class BaseWebView : WebView {
 
-    private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(context)
-    private val webViewClient: BaseWebViewClient = BaseWebViewClient(context)
+    private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(this@BaseWebView, context)
+    private val webViewClient: BaseWebViewClient = BaseWebViewClient(this@BaseWebView, context)
     private val lifecycle: BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
     private val jsCaller: JsCaller = JsCaller(this@BaseWebView)
 
@@ -31,44 +32,64 @@ class BaseWebView : WebView {
         initSetting()
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun initSetting() {
         settings.javaScriptEnabled = true
         settings.setSupportZoom(true)
         settings.javaScriptCanOpenWindowsAutomatically = true
-        settings.builtInZoomControls = true
+        settings.builtInZoomControls = false
         settings.displayZoomControls = false
-        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
-        settings.loadWithOverviewMode = true
-        settings.useWideViewPort = true
-        settings.domStorageEnabled = true
+        settings.savePassword = false
         settings.setAppCacheEnabled(true)
         settings.cacheMode = WebSettings.LOAD_DEFAULT
-        settings.allowFileAccess = true
         settings.databaseEnabled = true
         settings.setGeolocationEnabled(true)
         settings.allowContentAccess = true
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
-                || Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            removeJavascriptInterface("searchBoxJavaBridge_")
-            removeJavascriptInterface("accessibility")
-            removeJavascriptInterface("accessibilityTraversal")
+        settings.pluginState = WebSettings.PluginState.ON
+        settings.textZoom = 100
+        settings.loadsImagesAutomatically = true
+        settings.setSupportMultipleWindows(false)
+        settings.blockNetworkImage = false
+        settings.allowFileAccess = true
+        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        settings.loadWithOverviewMode = true
+        settings.useWideViewPort = true
+        settings.domStorageEnabled = true
+        settings.setNeedInitialFocus(true)
+        settings.defaultTextEncodingName = "utf-8"
+        val dir = context.cacheDir.absolutePath + "/cache"
+        settings.setAppCachePath(dir)
+        CookieManager.getInstance().setAcceptCookie(true)
+        val sdk = Build.VERSION.SDK_INT
+        if (sdk >= Build.VERSION_CODES.LOLLIPOP) {
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            setLayerType(LAYER_TYPE_HARDWARE, null)
+            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+        } else if (sdk >= Build.VERSION_CODES.KITKAT) {
+            setLayerType(LAYER_TYPE_HARDWARE, null)
+        } else {
+            settings.databasePath = context.filesDir.path;
+            setLayerType(LAYER_TYPE_SOFTWARE, null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                addJavascriptInterface(BaseJavaInterface(context), "Android")
+                removeJavascriptInterface("searchBoxJavaBridge_")
+                removeJavascriptInterface("accessibility")
+                removeJavascriptInterface("accessibilityTraversal")
+            } else {
+                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                settings.allowFileAccessFromFileURLs = false //通过 file url 加载的 Javascript 读取其他的本地文件 .建议关闭
+                settings.allowUniversalAccessFromFileURLs = false//允许通过 file url 加载的 Javascript 可以访问其他的源，包括其他的文件和 http，https
+            }
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            settings.setDatabasePath(context.filesDir.path);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            addJavascriptInterface(BaseJavaInterface(context), "Android")
-        }
-        CookieManager.getInstance().setAcceptCookie(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
-        }
+        //缓存文件最大值
+        settings.setAppCacheMaxSize(java.lang.Long.MAX_VALUE)
         setWebViewClient(webViewClient)
         setWebChromeClient(webViewChromeClient)
-        setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+        setDownloadListener(DownloadListener
+        {
+            url, userAgent, contentDisposition, mimetype, contentLength ->
             TODO("implement base download actions in BaseWebView")
         })
     }

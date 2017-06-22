@@ -54,4 +54,6 @@ interface IChromeListener {
 
     fun onCloseWindow(window: WebView?): Boolean
 
+    fun getVideoLoadingProgressView(): View?
+
 }
