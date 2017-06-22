@@ -16,6 +16,7 @@ class BaseWebView : WebView {
 
     private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(this@BaseWebView, context)
     private val webViewClient: BaseWebViewClient = BaseWebViewClient(this@BaseWebView, context)
+    private val webViewDownloadListener: BaseWebViewDownloadListener = BaseWebViewDownloadListener(context)
     private val lifecycle: BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
     private val jsCaller: JsCaller = JsCaller(this@BaseWebView)
 
@@ -87,11 +88,7 @@ class BaseWebView : WebView {
         settings.setAppCacheMaxSize(java.lang.Long.MAX_VALUE)
         setWebViewClient(webViewClient)
         setWebChromeClient(webViewChromeClient)
-        setDownloadListener(DownloadListener
-        {
-            url, userAgent, contentDisposition, mimetype, contentLength ->
-            TODO("implement base download actions in BaseWebView")
-        })
+        setDownloadListener(webViewDownloadListener)
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

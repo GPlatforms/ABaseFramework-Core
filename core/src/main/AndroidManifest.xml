@@ -3,4 +3,16 @@
 
     <permission android:name="android.intent.action.CALL"/>
 
+    <application>
+        <provider
+            android:name=".base.webview.WebViewFileProvider"
+            android:authorities="${applicationId}.WebViewFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/web_download_paths"/>
+        </provider>
+    </application>
+
 </manifest>
