@@ -10,8 +10,8 @@ import android.os.Parcelable
 class FileParcel: Parcelable {
 
     internal var id: Int = 0
-    private var contentPath: String? = null
-    private var fileBase64: String? = null
+    private var contentPath: String
+    private var fileBase64: String
 
     constructor(parcel: Parcel) {
         id = parcel.readInt()

@@ -22,7 +22,7 @@ class BaseWebChromeClient(val webView: WebView, context: Context) : WebChromeCli
     private var mJsCallJavas: MutableMap<String, JavaCaller> = HashMap()
     private var fileUploadHandler: UploadFileHandler = UploadFileHandler(context)
     private var videoHandler: WebVideoHandler = WebVideoHandler(webView, context)
-    private var videoProgressView: View? = null
+    private lateinit var videoProgressView: View
 
     fun addChromeListener(listener: IChromeListener) {
         chromeHandler.addUrlListener(listener)
@@ -176,10 +176,8 @@ class BaseWebChromeClient(val webView: WebView, context: Context) : WebChromeCli
     }
 
     private fun getDefaultVideoLoadingProgressView(): View? {
-        if (videoProgressView == null) {
-            videoProgressView = LayoutInflater.from(webView.context).inflate(R.layout.layout_video_progress, null)
-            TODO("style the VideoProgress layout")
-        }
+        videoProgressView = LayoutInflater.from(webView.context).inflate(R.layout.layout_video_progress, null)
+        //TODO("style the VideoProgress layout")
         return videoProgressView;
     }
 }

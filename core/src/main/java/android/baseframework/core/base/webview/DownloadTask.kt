@@ -27,7 +27,7 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
     private val mSpeed: Long = 0L
     private val TIME_OUT = 30000000
     private var time: Long = 0L
-    private var downloadNotification: DownloadNotification? = null
+    private lateinit var downloadNotification: DownloadNotification
     private val ERROR_LOAD = -5
 
     override fun doInBackground(vararg params: Unit?): Int {
@@ -52,26 +52,26 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
             val current = System.currentTimeMillis()
             used = current - begin
             val c = System.currentTimeMillis()
-            if (downloadNotification != null && c - time > 800) {
+            if (c - time > 800) {
                 time = c
             }
             progress = ((tmp + loaded) / totals.toFloat() * 100).toInt()
         }
-        downloadNotification?.setProgress(100, progress, false)
+        downloadNotification.setProgress(100, progress, false)
     }
 
     override fun onPostExecute(result: Int?) {
         if (result == ERROR_LOAD) {
             Toast.makeText(bean.context, "下载出错了", Toast.LENGTH_SHORT).show()
-            downloadNotification?.cancel(bean.notificationId)
+            downloadNotification.cancel(bean.notificationId)
             return
         }
-        downloadNotification?.cancel(bean.notificationId)
+        downloadNotification.cancel(bean.notificationId)
         val intent = WebViewUtils.getIntentCompat(bean.context, bean.file)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val rightPendIntent = PendingIntent.getActivity(bean.context,
                 0x110, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        downloadNotification!!.setProgressFinish("点击打开", rightPendIntent)
+        downloadNotification.setProgressFinish("点击打开", rightPendIntent)
     }
 
     override fun onCancelled() {
@@ -92,9 +92,9 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
         val rightPendIntent = PendingIntent.getActivity(bean.context, 0x33, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val ticker = "您有一条新通知"
         downloadNotification = DownloadNotification(bean.notificationId, bean.context)
-        downloadNotification!!.notify_progress(rightPendIntent, android.R.mipmap.sym_def_app_icon, ticker,
+        downloadNotification.notify_progress(rightPendIntent, android.R.mipmap.sym_def_app_icon, ticker,
                 "文件下载", progressHint, false, false, false)
-        downloadNotification!!.sent()
+        downloadNotification.sent()
     }
 
     @Throws(IOException::class)

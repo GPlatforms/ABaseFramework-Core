@@ -24,7 +24,7 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         val REQUEST_UPLOAD_FILE = 3
     }
 
-    var url: String? = null
+    lateinit var url: String
     var newWindowFlag = false
     var receiveTitleFlag = true
 
@@ -90,6 +90,9 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
     private fun initIntentData() {
         if (intent.hasExtra(EXTRA_URL)) {
             url = intent.getStringExtra(EXTRA_URL)
+            if (!TextUtils.isEmpty(url)) {
+                loadUrl(url)
+            }
         }
         newWindowFlag = intent.getBooleanExtra(EXTRA_NEW_WINDOW, false)
         receiveTitleFlag = intent.getBooleanExtra(EXTRA_RECEIVE_TITLE, true)

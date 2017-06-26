@@ -55,10 +55,10 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
     }
 
     private val IGNORE_UNSAFE_METHODS = arrayOf("getClass", "hashCode", "notify", "notifyAll", "equals", "toString", "wait")
-    private var mMethodsMap: HashMap<String, Method>? = null
-    private var mInterfaceObj: Any? = null
-    private var mInterfacedName: String? = null
-    private var mPreloadInterfaceJS: String? = null
+    private lateinit var mMethodsMap: HashMap<String, Method>
+    private lateinit var mInterfaceObj: Any
+    private lateinit var mInterfacedName: String
+    private lateinit var mPreloadInterfaceJS: String
 
     init {
         try {
@@ -69,7 +69,7 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
             mInterfacedName = interfaceName
             mMethodsMap = HashMap<String, Method>()
             // getMethods会获得所有继承与非继承的方法
-            val methods = mInterfaceObj!!.javaClass.methods
+            val methods = mInterfaceObj.javaClass.methods
             // 拼接的js脚本可参照备份文件：./library/doc/injected.js
             val sb = StringBuilder("javascript:(function(b){console.log(\"")
             sb.append(mInterfacedName)
@@ -80,7 +80,7 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
                 if (sign == null) {
                     continue
                 }
-                mMethodsMap!!.put(sign, method)
+                mMethodsMap.put(sign, method)
                 sb.append(String.format("a.%s=", method.name))
             }
             sb.append("function(){var f=Array.prototype.slice.call(arguments,0);if(f.length<1){throw\"")
@@ -141,7 +141,7 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
     }
 
     fun call(webView: WebView, jsonObject: JSONObject): String {
-        var time: Long = 0
+        val time: Long = 0
         try {
             val methodName = jsonObject.getString(KEY_METHOD)
             val argsTypes = jsonObject.getJSONArray(KEY_TYPES)
@@ -174,7 +174,7 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
                 }
             }
 
-            val currMethod = mMethodsMap!![sign] ?: return getReturn(jsonObject, 500, "not found method($sign) with valid parameters", time)
+            val currMethod = mMethodsMap[sign] ?: return getReturn(jsonObject, 500, "not found method($sign) with valid parameters", time)
 
             // 方法匹配失败
             // 数字类型细分匹配
@@ -209,15 +209,15 @@ class JavaCaller(interfaceObj: Any, interfaceName: String) {
     }
 
     private fun getReturn(reqJson: JSONObject, stateCode: Int, result: Any?, time: Long): String {
-        var result = result
+        var temp = result
         val insertRes: String
-        if (result == null) {
+        if (temp == null) {
             insertRes = "null"
-        } else if (result is String) {
-            result = result.replace("\"", "\\\"")
-            insertRes = "\"" + result.toString() + "\""
+        } else if (temp is String) {
+            temp = temp.replace("\"", "\\\"")
+            insertRes = "\"" + temp.toString() + "\""
         } else { // 其他类型直接转换
-            insertRes = result.toString()
+            insertRes = temp.toString()
 
             // 兼容：如果在解决WebView注入安全漏洞时，js注入采用的是XXX:function(){return prompt(...)}的形式，函数返回类型包括：void、int、boolean、String；
             // 在返回给网页（onJsPrompt方法中jsPromptResult.confirm）的时候强制返回的是String类型，所以在此将result的值加双引号兼容一下；

@@ -17,15 +17,9 @@ class DownloadNotification(val id: Int, val context: Context) {
 
     private val FLAG = Notification.FLAG_INSISTENT
     internal var requestCode = SystemClock.uptimeMillis().toInt()
-    private var nm: NotificationManager
-    private var notification: Notification? = null
-    private var cBuilder: NotificationCompat.Builder
-    private val nBuilder: Notification.Builder? = null
-
-    init {
-        nm = context.getSystemService(Activity.NOTIFICATION_SERVICE) as NotificationManager
-        cBuilder = NotificationCompat.Builder(context)
-    }
+    private var nm: NotificationManager = context.getSystemService(Activity.NOTIFICATION_SERVICE) as NotificationManager
+    private lateinit var notification: Notification
+    private var cBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context)
 
     fun notify_progress(pendingIntent: PendingIntent, smallIcon: Int,
                         ticker: String, title: String, content: String,
