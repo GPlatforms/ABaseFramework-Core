@@ -2,12 +2,15 @@ package android.baseframework.core.base.webview
 
 import android.baseframework.core.R
 import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.webview.handler.IChromeListener
+import android.baseframework.core.base.webview.handler.IUrlListener
+import android.baseframework.core.base.webview.handler.SimpleChromeListener
+import android.baseframework.core.base.webview.handler.SimpleUrlListener
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.webkit.ValueCallback
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import kotlinx.android.synthetic.main.activity_base_webview.*
 

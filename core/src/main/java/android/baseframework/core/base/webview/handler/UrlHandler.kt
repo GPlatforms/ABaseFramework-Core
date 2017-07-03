@@ -1,56 +1,42 @@
-package android.baseframework.core.base.webview
-
-import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
-import android.net.Uri
-import android.net.http.SslError
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
-import android.view.KeyEvent
-import android.view.View
-import android.webkit.*
-import java.util.concurrent.Callable
-import java.util.concurrent.FutureTask
+package android.baseframework.core.base.webview.handler
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
 
-class ChromeHandler(val context : Context) {
+class UrlHandler(val context: android.content.Context) {
 
-    private var mListeners: ArrayList<IChromeListener> = ArrayList()
+    private var mListeners: ArrayList<IUrlListener> = ArrayList()
     private var mListenerFinal = false
-    private var handler = Handler(context.mainLooper)
+    private var handler = android.os.Handler(context.mainLooper)
 
     /**
      * add a new IUrlListener at the last of the {@link #mListeners}
      * @param listener the new listener
      */
-    fun addUrlListener(listener: IChromeListener) {
-        if (!mListenerFinal) mListeners.add(0, listener)
+    fun addUrlListener(listener: IUrlListener) {
+        if(!mListenerFinal) mListeners.add(0, listener)
     }
 
     /**
      * the default value of {@link #mListenerFinal} is FALSE. You CANNOT reverse the value of it since you set it to
-     * TRUE. After been set to TRUE, new {@link IChromeListener} will never be saved to the list anymore.
+     * TRUE. After been set to TRUE, new {@link IUrlListener} will never be saved to the list anymore.
      * @param final the value to set
      */
     fun setListenerFinal(final: Boolean) {
-        if (!mListenerFinal && final) {
+        if(!mListenerFinal && final) {
             mListenerFinal = final
             mListeners.trimToSize()
         }
     }
 
-    fun onRequestFocus(view: WebView?): Boolean {
+    fun onPageFinished(view: android.webkit.WebView?, url: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onRequestFocus(view)) {
+                    if (listener.onPageFinished(view, url)) {
                         result = true
                         break
                     }
@@ -68,12 +54,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onJsAlert(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
+    fun shouldOverrideKeyEvent(view: android.webkit.WebView?, event: android.view.KeyEvent?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onJsAlert(view, url, message, jsResult)) {
+                    if (listener.shouldOverrideKeyEvent(view, event)) {
                         result = true
                         break
                     }
@@ -91,35 +77,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onJsPrompt(view: WebView?, url: String?, message: String?, defaultValue: String?,
-                   jsPrompResult: JsPromptResult?): Boolean {if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
-                var result = false
-                for (listener in mListeners) {
-                    if (listener.onJsPrompt(view, url, message, defaultValue, jsPrompResult)) {
-                        result = true
-                        break
-                    }
-                }
-                result
-            })
-            runOnUiThread(task)
-            try {
-                return task.get()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-        return false
-    }
-
-    fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?): Boolean {
+    fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onShowCustomView(view, callback)) {
+                    if (listener.shouldOverrideUrlLoading(view, url)) {
                         result = true
                         break
                     }
@@ -137,12 +100,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onGeolocationPermissionsShowPrompt(origin: String?, callback: GeolocationPermissions.Callback?): Boolean {
+    fun doUpdateVisitedHistory(view: android.webkit.WebView?, url: String?, isReload: Boolean): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onGeolocationPermissionsShowPrompt(origin, callback)) {
+                    if (listener.doUpdateVisitedHistory(view, url, isReload)) {
                         result = true
                         break
                     }
@@ -160,12 +123,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onPermissionRequest(request: PermissionRequest?): Boolean {
+    fun onReceivedError(view: android.webkit.WebView?, request: android.webkit.WebResourceRequest?, error: android.webkit.WebResourceError?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onPermissionRequest(request)) {
+                    if (listener.onReceivedError(view, request, error)) {
                         result = true
                         break
                     }
@@ -183,12 +146,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+    fun onReceivedLoginRequest(view: android.webkit.WebView?, realm: String?, account: String?, args: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onConsoleMessage(consoleMessage)) {
+                    if (listener.onReceivedLoginRequest(view, realm, account, args)) {
                         result = true
                         break
                     }
@@ -206,12 +169,13 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean {
+    fun onReceivedHttpError(view: android.webkit.WebView?, request: android.webkit.WebResourceRequest?,
+                            errorResponse: android.webkit.WebResourceResponse?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onPermissionRequestCanceled(request)) {
+                    if (listener.onReceivedHttpError(view, request, errorResponse)) {
                         result = true
                         break
                     }
@@ -229,36 +193,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?,
-                          fileChooserParams: WebChromeClient.FileChooserParams?): Boolean {if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
-                var result = false
-                for (listener in mListeners) {
-                    if (listener.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
-                        result = true
-                        break
-                    }
-                }
-                result
-            })
-            runOnUiThread(task)
-            try {
-                return task.get()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-        return false
-
-    }
-
-    fun onReceivedTouchIconUrl(view: WebView?, url: String?, precomposed: Boolean): Boolean {
+    fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: android.graphics.Bitmap?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedTouchIconUrl(view, url, precomposed)) {
+                    if (listener.onPageStarted(view, url, favicon)) {
                         result = true
                         break
                     }
@@ -276,12 +216,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onReceivedIcon(view: WebView?, icon: Bitmap?): Boolean {
+    fun onScaleChanged(view: android.webkit.WebView?, oldScale: Float, newScale: Float): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedIcon(view, icon)) {
+                    if (listener.onScaleChanged(view, oldScale, newScale)) {
                         result = true
                         break
                     }
@@ -299,12 +239,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onReceivedTitle(view: WebView?, title: String?): Boolean {
+    fun onPageCommitVisible(view: android.webkit.WebView?, url: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedTitle(view, title)) {
+                    if (listener.onPageCommitVisible(view, url)) {
                         result = true
                         break
                     }
@@ -322,12 +262,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onProgressChanged(view: WebView?, newProgress: Int): Boolean {
+    fun onUnhandledKeyEvent(view: android.webkit.WebView?, event: android.view.KeyEvent?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onProgressChanged(view, newProgress)) {
+                    if (listener.onUnhandledKeyEvent(view, event)) {
                         result = true
                         break
                     }
@@ -345,12 +285,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onJsConfirm(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
+    fun onReceivedClientCertRequest(view: android.webkit.WebView?, request: android.webkit.ClientCertRequest?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onJsConfirm(view, url, message, jsResult)) {
+                    if (listener.onReceivedClientCertRequest(view, request)) {
                         result = true
                         break
                     }
@@ -368,12 +308,13 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean {
+    fun onReceivedHttpAuthRequest(view: android.webkit.WebView?, handler: android.webkit.HttpAuthHandler?, host: String?,
+                                  realm: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.getVisitedHistory(callback)) {
+                    if (listener.onReceivedHttpAuthRequest(view, handler, host, realm)) {
                         result = true
                         break
                     }
@@ -391,12 +332,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onGeolocationPermissionsHidePrompt(): Boolean {
+    fun onReceivedSslError(view: android.webkit.WebView?, handler: android.webkit.SslErrorHandler?, error: android.net.http.SslError?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onGeolocationPermissionsHidePrompt()) {
+                    if (listener.onReceivedSslError(view, handler, error)) {
                         result = true
                         break
                     }
@@ -414,12 +355,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onJsBeforeUnload(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
+    fun onFormResubmission(view: android.webkit.WebView?, dontResend: android.os.Message?, resend: android.os.Message?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onJsBeforeUnload(view, url, message, jsResult)) {
+                    if (listener.onFormResubmission(view, dontResend, resend)) {
                         result = true
                         break
                     }
@@ -437,12 +378,12 @@ class ChromeHandler(val context : Context) {
         return false
     }
 
-    fun onHideCustomView(): Boolean {
+    fun onLoadResource(view: android.webkit.WebView?, url: String?): Boolean {
         if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
+            val task = java.util.concurrent.FutureTask(java.util.concurrent.Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onHideCustomView()) {
+                    if (listener.onLoadResource(view, url)) {
                         result = true
                         break
                     }
@@ -458,79 +399,10 @@ class ChromeHandler(val context : Context) {
 
         }
         return false
-    }
-
-    fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
-        if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
-                var result = false
-                for (listener in mListeners) {
-                    if (listener.onCreateWindow(view, isDialog, isUserGesture, resultMsg)) {
-                        result = true
-                        break
-                    }
-                }
-                result
-            })
-            runOnUiThread(task)
-            try {
-                return task.get()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-        return false
-    }
-
-    fun onCloseWindow(window: WebView?): Boolean {
-        if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<Boolean> {
-                var result = false
-                for (listener in mListeners) {
-                    if (listener.onCloseWindow(window)) {
-                        result = true
-                        break
-                    }
-                }
-                result
-            })
-            runOnUiThread(task)
-            try {
-                return task.get()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-        return false
-    }
-
-    fun getVideoLoadingProgressView(): View? {
-        if (!mListeners.isEmpty()) {
-            val task = FutureTask(Callable<View> {
-                var view: View? = null
-                for (listener in mListeners) {
-                    view = listener.getVideoLoadingProgressView()
-                    if (null != view) {
-                        break
-                    }
-                }
-                view
-            })
-            runOnUiThread(task)
-            try {
-                return task.get()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-        return null
     }
 
     fun runOnUiThread(task: Runnable) {
-        if (Thread.currentThread() !== Looper.getMainLooper().thread) {
+        if (Thread.currentThread() !== android.os.Looper.getMainLooper().thread) {
             handler.post(task)
         } else {
             task.run()

@@ -1,4 +1,4 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
 import android.text.TextUtils
 import android.util.Log

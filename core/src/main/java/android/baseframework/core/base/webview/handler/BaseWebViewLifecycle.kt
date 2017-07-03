@@ -1,16 +1,10 @@
-package android.baseframework.core.base.webview
-
-import android.os.Build
-import android.os.Looper
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
+package android.baseframework.core.base.webview.handler
 
 /**
  * Created by Neil Zheng on 2017/6/19.
  */
 
-class BaseWebViewLifecycle(val webView: WebView) : ILifecycle {
+class BaseWebViewLifecycle(val webView: android.webkit.WebView) : ILifecycle {
 
     override fun onResume() {
         webView.onResume()
@@ -23,7 +17,7 @@ class BaseWebViewLifecycle(val webView: WebView) : ILifecycle {
     }
 
     override fun onDestroy() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
             return
         }
         webView.loadUrl("about:blank")
@@ -32,15 +26,15 @@ class BaseWebViewLifecycle(val webView: WebView) : ILifecycle {
             webView.handler.removeCallbacksAndMessages(null)
         }
         webView.removeAllViews()
-        if (webView.parent is ViewGroup) {
-            val vg = webView.parent as ViewGroup
+        if (webView.parent is android.view.ViewGroup) {
+            val vg = webView.parent as android.view.ViewGroup
             vg.removeView(webView)
             vg.removeAllViewsInLayout()
         }
         webView.setWebChromeClient(null)
         webView.setWebViewClient(null)
         webView.tag = null
-        webView.visibility = View.GONE
+        webView.visibility = android.view.View.GONE
         webView.clearHistory()
         webView.removeAllViewsInLayout()
         releaseConfigCallback()
@@ -51,9 +45,9 @@ class BaseWebViewLifecycle(val webView: WebView) : ILifecycle {
      * this function is called to avoid MemoryLeak happening
      */
     private fun releaseConfigCallback() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { // JELLY_BEAN
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) { // JELLY_BEAN
             try {
-                var field = WebView::class.java.getDeclaredField("mWebViewCore")
+                var field = android.webkit.WebView::class.java.getDeclaredField("mWebViewCore")
                 field = field.type.getDeclaredField("mBrowserFrame")
                 field = field.type.getDeclaredField("sConfigCallback")
                 field.isAccessible = true
@@ -64,7 +58,7 @@ class BaseWebViewLifecycle(val webView: WebView) : ILifecycle {
                 e.printStackTrace()
             }
 
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) { // KITKAT
+        } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) { // KITKAT
             try {
                 val sConfigCallback = Class.forName("android.webkit.BrowserFrame").getDeclaredField("sConfigCallback")
                 if (sConfigCallback != null) {

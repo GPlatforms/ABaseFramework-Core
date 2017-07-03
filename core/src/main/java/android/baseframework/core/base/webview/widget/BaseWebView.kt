@@ -1,18 +1,12 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.widget
 
-import android.annotation.TargetApi
-import android.baseframework.core.BuildConfig
-import android.content.Context
-import android.content.Intent
-import android.util.AttributeSet
-import android.os.Build
-import android.webkit.*
+import android.baseframework.core.base.webview.handler.*
 
 /**
  * Created by Neil Zheng on 2017/6/15.
  */
 
-class BaseWebView : WebView {
+class BaseWebView : android.webkit.WebView {
 
     private val webViewChromeClient: BaseWebChromeClient = BaseWebChromeClient(this@BaseWebView, context)
     private val webViewClient: BaseWebViewClient = BaseWebViewClient(this@BaseWebView, context)
@@ -20,20 +14,20 @@ class BaseWebView : WebView {
     private val lifecycle: BaseWebViewLifecycle = BaseWebViewLifecycle(this@BaseWebView)
     private val jsCaller: JsCaller = JsCaller(this@BaseWebView)
 
-    constructor(context: Context) : super(context)
+    constructor(context: android.content.Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: android.content.Context, attrs: android.util.AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: android.content.Context, attrs: android.util.AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            android.webkit.WebView.setWebContentsDebuggingEnabled(android.baseframework.core.BuildConfig.DEBUG)
         }
         initSetting()
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @android.annotation.TargetApi(android.os.Build.VERSION_CODES.LOLLIPOP)
     private fun initSetting() {
         settings.javaScriptEnabled = true
         settings.setSupportZoom(true)
@@ -42,17 +36,17 @@ class BaseWebView : WebView {
         settings.displayZoomControls = false
         settings.savePassword = false
         settings.setAppCacheEnabled(true)
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
+        settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
         settings.databaseEnabled = true
         settings.setGeolocationEnabled(true)
         settings.allowContentAccess = true
-        settings.pluginState = WebSettings.PluginState.ON
+        settings.pluginState = android.webkit.WebSettings.PluginState.ON
         settings.textZoom = 100
         settings.loadsImagesAutomatically = true
         settings.setSupportMultipleWindows(false)
         settings.blockNetworkImage = false
         settings.allowFileAccess = true
-        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        settings.layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.SINGLE_COLUMN
         settings.loadWithOverviewMode = true
         settings.useWideViewPort = true
         settings.domStorageEnabled = true
@@ -60,26 +54,26 @@ class BaseWebView : WebView {
         settings.defaultTextEncodingName = "utf-8"
         val dir = context.cacheDir.absolutePath + "/cache"
         settings.setAppCachePath(dir)
-        CookieManager.getInstance().setAcceptCookie(true)
-        val sdk = Build.VERSION.SDK_INT
-        if (sdk >= Build.VERSION_CODES.LOLLIPOP) {
-            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        android.webkit.CookieManager.getInstance().setAcceptCookie(true)
+        val sdk = android.os.Build.VERSION.SDK_INT
+        if (sdk >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             setLayerType(LAYER_TYPE_HARDWARE, null)
-            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
-        } else if (sdk >= Build.VERSION_CODES.KITKAT) {
+            android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+        } else if (sdk >= android.os.Build.VERSION_CODES.KITKAT) {
             setLayerType(LAYER_TYPE_HARDWARE, null)
         } else {
             settings.databasePath = context.filesDir.path;
             setLayerType(LAYER_TYPE_SOFTWARE, null)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 addJavascriptInterface(BaseJavaInterface(context), "Android")
                 removeJavascriptInterface("searchBoxJavaBridge_")
                 removeJavascriptInterface("accessibility")
                 removeJavascriptInterface("accessibilityTraversal")
             } else {
-                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+                settings.setRenderPriority(android.webkit.WebSettings.RenderPriority.HIGH);
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
                 settings.allowFileAccessFromFileURLs = false //通过 file url 加载的 Javascript 读取其他的本地文件 .建议关闭
                 settings.allowUniversalAccessFromFileURLs = false//允许通过 file url 加载的 Javascript 可以访问其他的源，包括其他的文件和 http，https
             }
@@ -91,7 +85,7 @@ class BaseWebView : WebView {
         setDownloadListener(webViewDownloadListener)
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
         webViewChromeClient.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -99,7 +93,7 @@ class BaseWebView : WebView {
         jsCaller.quickCallJs(js)
     }
 
-    fun callJs(js: String, callback: ValueCallback<String>) {
+    fun callJs(js: String, callback: android.webkit.ValueCallback<String>) {
         jsCaller.quickCallJs(js, callback)
     }
 
@@ -107,7 +101,7 @@ class BaseWebView : WebView {
         jsCaller.quickCallJs(js)
     }
 
-    fun quickCallJs(js: String, callback: ValueCallback<String>?, vararg params: String) {
+    fun quickCallJs(js: String, callback: android.webkit.ValueCallback<String>?, vararg params: String) {
         jsCaller.quickCallJs(js, callback, *params)
     }
 

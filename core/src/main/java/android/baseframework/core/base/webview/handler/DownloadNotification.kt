@@ -1,4 +1,4 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
 import android.app.Activity
 import android.app.Notification
@@ -13,15 +13,15 @@ import android.util.Log
  * Created by Neil Zheng on 2017/6/22.
  */
 
-class DownloadNotification(val id: Int, val context: Context) {
+class DownloadNotification(val id: Int, val context: android.content.Context) {
 
-    private val FLAG = Notification.FLAG_INSISTENT
-    internal var requestCode = SystemClock.uptimeMillis().toInt()
-    private var nm: NotificationManager = context.getSystemService(Activity.NOTIFICATION_SERVICE) as NotificationManager
-    private lateinit var notification: Notification
-    private var cBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context)
+    private val FLAG = android.app.Notification.FLAG_INSISTENT
+    internal var requestCode = android.os.SystemClock.uptimeMillis().toInt()
+    private var nm: android.app.NotificationManager = context.getSystemService(android.app.Activity.NOTIFICATION_SERVICE) as android.app.NotificationManager
+    private lateinit var notification: android.app.Notification
+    private var cBuilder: android.support.v4.app.NotificationCompat.Builder = android.support.v4.app.NotificationCompat.Builder(context)
 
-    fun notify_progress(pendingIntent: PendingIntent, smallIcon: Int,
+    fun notify_progress(pendingIntent: android.app.PendingIntent, smallIcon: Int,
                         ticker: String, title: String, content: String,
                         sound: Boolean, vibrate: Boolean, lights: Boolean) {
         setCompatBuilder(pendingIntent, smallIcon, ticker, title, content, sound, vibrate, lights)
@@ -36,7 +36,7 @@ class DownloadNotification(val id: Int, val context: Context) {
      * *
      * @param ticker
      */
-    private fun setCompatBuilder(pendingIntent: PendingIntent, smallIcon: Int, ticker: String,
+    private fun setCompatBuilder(pendingIntent: android.app.PendingIntent, smallIcon: Int, ticker: String,
                                  title: String, content: String, sound: Boolean, vibrate: Boolean, lights: Boolean) {
         //        // 如果当前Activity启动在前台，则不开启新的Activity。
         //        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -61,7 +61,7 @@ class DownloadNotification(val id: Int, val context: Context) {
          * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
 		 * 优先级越高的，通知排的越靠前，优先级低的，不会在手机最顶部的状态栏显示图标
 		 */
-        cBuilder.priority = NotificationCompat.PRIORITY_MAX
+        cBuilder.priority = android.support.v4.app.NotificationCompat.PRIORITY_MAX
         /*
          * Notification.DEFAULT_ALL：铃声、闪光、震动均系统默认。
 		 * Notification.DEFAULT_SOUND：系统默认铃声。
@@ -71,13 +71,13 @@ class DownloadNotification(val id: Int, val context: Context) {
 		 */
         var defaults = 0
         if (sound) {
-            defaults = defaults or Notification.DEFAULT_SOUND
+            defaults = defaults or android.app.Notification.DEFAULT_SOUND
         }
         if (vibrate) {
-            defaults = defaults or Notification.DEFAULT_VIBRATE
+            defaults = defaults or android.app.Notification.DEFAULT_VIBRATE
         }
         if (lights) {
-            defaults = defaults or Notification.DEFAULT_LIGHTS
+            defaults = defaults or android.app.Notification.DEFAULT_LIGHTS
         }
         cBuilder.setDefaults(defaults)
     }
@@ -87,7 +87,7 @@ class DownloadNotification(val id: Int, val context: Context) {
         sent()
     }
 
-    fun setProgressFinish(content: String, pendingIntent: PendingIntent) {
+    fun setProgressFinish(content: String, pendingIntent: android.app.PendingIntent) {
         cBuilder.setContentText(content)
         cBuilder.setProgress(100, 100, false)
         cBuilder.setContentIntent(pendingIntent)

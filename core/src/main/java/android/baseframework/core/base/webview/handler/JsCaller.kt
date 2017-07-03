@@ -1,36 +1,23 @@
-package android.baseframework.core.base.webview
-
-import android.baseframework.core.BuildConfig
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.support.annotation.RequiresApi
-import android.text.TextUtils
-import android.util.Log
-import android.webkit.ValueCallback
-import android.webkit.WebView
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
+package android.baseframework.core.base.webview.handler
 
 /**
  * Created by Neil Zheng on 2017/6/19.
  */
 
-class JsCaller(val webView: WebView) {
+class JsCaller(val webView: android.webkit.WebView) {
 
-    private val mHandler = Handler(Looper.getMainLooper())
+    private val mHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
-    private fun callSafeCallJs(s: String, valueCallback: ValueCallback<String>?) {
+    private fun callSafeCallJs(s: String, valueCallback: android.webkit.ValueCallback<String>?) {
         mHandler.post { callJs(s, valueCallback) }
     }
 
-    fun callJs(js: String, callback: ValueCallback<String>?) {
-        if (Thread.currentThread() !== Looper.getMainLooper().thread) {
+    fun callJs(js: String, callback: android.webkit.ValueCallback<String>?) {
+        if (Thread.currentThread() !== android.os.Looper.getMainLooper().thread) {
             callSafeCallJs(js, callback)
             return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             this.evaluateJs(js, callback)
         } else {
             this.loadJs(js)
@@ -45,14 +32,14 @@ class JsCaller(val webView: WebView) {
         webView.loadUrl(js)
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private fun evaluateJs(js: String, callback: ValueCallback<String>?) {
+    @android.support.annotation.RequiresApi(android.os.Build.VERSION_CODES.KITKAT)
+    private fun evaluateJs(js: String, callback: android.webkit.ValueCallback<String>?) {
         webView.evaluateJavascript(js, { value ->
             callback?.onReceiveValue(value)
         })
     }
 
-    fun quickCallJs(method: String, callback: ValueCallback<String>?, vararg params: String) {
+    fun quickCallJs(method: String, callback: android.webkit.ValueCallback<String>?, vararg params: String) {
         val sb = StringBuilder()
         sb.append("javascript:" + method)
         if (params == null || params.size == 0) {
@@ -88,17 +75,17 @@ class JsCaller(val webView: WebView) {
     }
 
     fun isJson(param: String?): Boolean {
-        if (TextUtils.isEmpty(param)) {
+        if (android.text.TextUtils.isEmpty(param)) {
             return false
         }
         try {
             if (param!!.startsWith("[")) {
-                JSONArray(param)
+                org.json.JSONArray(param)
             } else {
-                JSONObject(param)
+                org.json.JSONObject(param)
             }
             return true
-        } catch (ignored: JSONException) {
+        } catch (ignored: org.json.JSONException) {
             return false
         }
     }

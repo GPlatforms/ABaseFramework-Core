@@ -1,13 +1,12 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.http.SslError
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.KeyEvent
+import android.view.View
 import android.webkit.*
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask
@@ -17,9 +16,9 @@ import java.util.concurrent.FutureTask
  */
 
 
-class UrlHandler(val context: Context) {
+class ChromeHandler(val context : Context) {
 
-    private var mListeners: ArrayList<IUrlListener> = ArrayList()
+    private var mListeners: ArrayList<IChromeListener> = ArrayList()
     private var mListenerFinal = false
     private var handler = Handler(context.mainLooper)
 
@@ -27,28 +26,28 @@ class UrlHandler(val context: Context) {
      * add a new IUrlListener at the last of the {@link #mListeners}
      * @param listener the new listener
      */
-    fun addUrlListener(listener: IUrlListener) {
-        if(!mListenerFinal) mListeners.add(0, listener)
+    fun addUrlListener(listener: IChromeListener) {
+        if (!mListenerFinal) mListeners.add(0, listener)
     }
 
     /**
      * the default value of {@link #mListenerFinal} is FALSE. You CANNOT reverse the value of it since you set it to
-     * TRUE. After been set to TRUE, new {@link IUrlListener} will never be saved to the list anymore.
+     * TRUE. After been set to TRUE, new {@link IChromeListener} will never be saved to the list anymore.
      * @param final the value to set
      */
     fun setListenerFinal(final: Boolean) {
-        if(!mListenerFinal && final) {
+        if (!mListenerFinal && final) {
             mListenerFinal = final
             mListeners.trimToSize()
         }
     }
 
-    fun onPageFinished(view: WebView?, url: String?): Boolean {
+    fun onRequestFocus(view: WebView?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onPageFinished(view, url)) {
+                    if (listener.onRequestFocus(view)) {
                         result = true
                         break
                     }
@@ -66,12 +65,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun shouldOverrideKeyEvent(view: WebView?, event: KeyEvent?): Boolean {
+    fun onJsAlert(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.shouldOverrideKeyEvent(view, event)) {
+                    if (listener.onJsAlert(view, url, message, jsResult)) {
                         result = true
                         break
                     }
@@ -89,12 +88,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        if (!mListeners.isEmpty()) {
+    fun onJsPrompt(view: WebView?, url: String?, message: String?, defaultValue: String?,
+                   jsPrompResult: JsPromptResult?): Boolean {if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.shouldOverrideUrlLoading(view, url)) {
+                    if (listener.onJsPrompt(view, url, message, defaultValue, jsPrompResult)) {
                         result = true
                         break
                     }
@@ -112,12 +111,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean): Boolean {
+    fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.doUpdateVisitedHistory(view, url, isReload)) {
+                    if (listener.onShowCustomView(view, callback)) {
                         result = true
                         break
                     }
@@ -135,12 +134,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?): Boolean {
+    fun onGeolocationPermissionsShowPrompt(origin: String?, callback: GeolocationPermissions.Callback?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedError(view, request, error)) {
+                    if (listener.onGeolocationPermissionsShowPrompt(origin, callback)) {
                         result = true
                         break
                     }
@@ -158,12 +157,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedLoginRequest(view: WebView?, realm: String?, account: String?, args: String?): Boolean {
+    fun onPermissionRequest(request: PermissionRequest?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedLoginRequest(view, realm, account, args)) {
+                    if (listener.onPermissionRequest(request)) {
                         result = true
                         break
                     }
@@ -181,13 +180,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?,
-                            errorResponse: WebResourceResponse?): Boolean {
+    fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedHttpError(view, request, errorResponse)) {
+                    if (listener.onConsoleMessage(consoleMessage)) {
                         result = true
                         break
                     }
@@ -205,12 +203,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?): Boolean {
+    fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onPageStarted(view, url, favicon)) {
+                    if (listener.onPermissionRequestCanceled(request)) {
                         result = true
                         break
                     }
@@ -228,12 +226,36 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float): Boolean {
+    fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?,
+                          fileChooserParams: WebChromeClient.FileChooserParams?): Boolean {if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<Boolean> {
+                var result = false
+                for (listener in mListeners) {
+                    if (listener.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
+                        result = true
+                        break
+                    }
+                }
+                result
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return false
+
+    }
+
+    fun onReceivedTouchIconUrl(view: WebView?, url: String?, precomposed: Boolean): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onScaleChanged(view, oldScale, newScale)) {
+                    if (listener.onReceivedTouchIconUrl(view, url, precomposed)) {
                         result = true
                         break
                     }
@@ -251,12 +273,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onPageCommitVisible(view: WebView?, url: String?): Boolean {
+    fun onReceivedIcon(view: WebView?, icon: Bitmap?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onPageCommitVisible(view, url)) {
+                    if (listener.onReceivedIcon(view, icon)) {
                         result = true
                         break
                     }
@@ -274,12 +296,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onUnhandledKeyEvent(view: WebView?, event: KeyEvent?): Boolean {
+    fun onReceivedTitle(view: WebView?, title: String?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onUnhandledKeyEvent(view, event)) {
+                    if (listener.onReceivedTitle(view, title)) {
                         result = true
                         break
                     }
@@ -297,12 +319,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedClientCertRequest(view: WebView?, request: ClientCertRequest?): Boolean {
+    fun onProgressChanged(view: WebView?, newProgress: Int): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedClientCertRequest(view, request)) {
+                    if (listener.onProgressChanged(view, newProgress)) {
                         result = true
                         break
                     }
@@ -320,13 +342,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedHttpAuthRequest(view: WebView?, handler: HttpAuthHandler?, host: String?,
-                                  realm: String?): Boolean {
+    fun onJsConfirm(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedHttpAuthRequest(view, handler, host, realm)) {
+                    if (listener.onJsConfirm(view, url, message, jsResult)) {
                         result = true
                         break
                     }
@@ -344,12 +365,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?): Boolean {
+    fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onReceivedSslError(view, handler, error)) {
+                    if (listener.getVisitedHistory(callback)) {
                         result = true
                         break
                     }
@@ -367,12 +388,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onFormResubmission(view: WebView?, dontResend: Message?, resend: Message?): Boolean {
+    fun onGeolocationPermissionsHidePrompt(): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onFormResubmission(view, dontResend, resend)) {
+                    if (listener.onGeolocationPermissionsHidePrompt()) {
                         result = true
                         break
                     }
@@ -390,12 +411,12 @@ class UrlHandler(val context: Context) {
         return false
     }
 
-    fun onLoadResource(view: WebView?, url: String?): Boolean {
+    fun onJsBeforeUnload(view: WebView?, url: String?, message: String?, jsResult: JsResult?): Boolean {
         if (!mListeners.isEmpty()) {
             val task = FutureTask(Callable<Boolean> {
                 var result = false
                 for (listener in mListeners) {
-                    if (listener.onLoadResource(view, url)) {
+                    if (listener.onJsBeforeUnload(view, url, message, jsResult)) {
                         result = true
                         break
                     }
@@ -411,6 +432,98 @@ class UrlHandler(val context: Context) {
 
         }
         return false
+    }
+
+    fun onHideCustomView(): Boolean {
+        if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<Boolean> {
+                var result = false
+                for (listener in mListeners) {
+                    if (listener.onHideCustomView()) {
+                        result = true
+                        break
+                    }
+                }
+                result
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return false
+    }
+
+    fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
+        if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<Boolean> {
+                var result = false
+                for (listener in mListeners) {
+                    if (listener.onCreateWindow(view, isDialog, isUserGesture, resultMsg)) {
+                        result = true
+                        break
+                    }
+                }
+                result
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return false
+    }
+
+    fun onCloseWindow(window: WebView?): Boolean {
+        if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<Boolean> {
+                var result = false
+                for (listener in mListeners) {
+                    if (listener.onCloseWindow(window)) {
+                        result = true
+                        break
+                    }
+                }
+                result
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return false
+    }
+
+    fun getVideoLoadingProgressView(): View? {
+        if (!mListeners.isEmpty()) {
+            val task = FutureTask(Callable<View> {
+                var view: View? = null
+                for (listener in mListeners) {
+                    view = listener.getVideoLoadingProgressView()
+                    if (null != view) {
+                        break
+                    }
+                }
+                view
+            })
+            runOnUiThread(task)
+            try {
+                return task.get()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
+        return null
     }
 
     fun runOnUiThread(task: Runnable) {

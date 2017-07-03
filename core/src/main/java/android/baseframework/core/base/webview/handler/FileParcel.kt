@@ -1,4 +1,4 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -7,13 +7,13 @@ import android.os.Parcelable
  * Created by Neil Zheng on 2017/6/21.
  */
 
-class FileParcel: Parcelable {
+class FileParcel: android.os.Parcelable {
 
     internal var id: Int = 0
     private var contentPath: String
     private var fileBase64: String
 
-    constructor(parcel: Parcel) {
+    constructor(parcel: android.os.Parcel) {
         id = parcel.readInt()
         contentPath = parcel.readString()
         fileBase64 = parcel.readString()
@@ -25,12 +25,12 @@ class FileParcel: Parcelable {
         this.fileBase64 = fileBase64
     }
 
-    val CREATOR: Parcelable.Creator<FileParcel> = object : Parcelable.Creator<FileParcel> {
-        override fun createFromParcel(parcel: Parcel): FileParcel {
-            return FileParcel(parcel)
+    val CREATOR: android.os.Parcelable.Creator<FileParcel> = object : android.os.Parcelable.Creator<FileParcel> {
+        override fun createFromParcel(parcel: android.os.Parcel): android.baseframework.core.base.webview.handler.FileParcel {
+            return android.baseframework.core.base.webview.handler.FileParcel(parcel)
         }
 
-        override fun newArray(size: Int): Array<FileParcel?> {
+        override fun newArray(size: Int): Array<android.baseframework.core.base.webview.handler.FileParcel?> {
             return arrayOfNulls(size)
         }
     }
@@ -63,7 +63,7 @@ class FileParcel: Parcelable {
         return 0
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
+    override fun writeToParcel(dest: android.os.Parcel, flags: Int) {
         dest.writeInt(id)
         dest.writeString(contentPath)
         dest.writeString(fileBase64)

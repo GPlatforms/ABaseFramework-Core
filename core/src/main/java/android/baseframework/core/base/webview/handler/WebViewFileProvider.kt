@@ -1,4 +1,4 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
 import android.support.v4.content.FileProvider
 

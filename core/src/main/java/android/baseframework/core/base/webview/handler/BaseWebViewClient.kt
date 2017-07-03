@@ -1,7 +1,5 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
-import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -11,8 +9,6 @@ import android.os.Message
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.webkit.*
-import android.support.v4.content.ContextCompat.startActivity
-import com.orhanobut.logger.Logger
 
 
 /**

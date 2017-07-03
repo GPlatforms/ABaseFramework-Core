@@ -1,28 +1,23 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
-import android.util.Log
 import android.webkit.WebView
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import java.lang.ref.WeakReference
 
 /**
  * Created by Neil Zheng on 2017/6/19.
  */
 
-class JsCallback(view: WebView, injectedName: String?, index: Int) {
+class JsCallback(view: android.webkit.WebView, injectedName: String?, index: Int) {
 
     private val CALLBACK_JS_FORMAT = "javascript:%s.callback(%d, %d %s);"
     private var mIndex: Int
     private var mCouldGoOn: Boolean = false
-    private var mWebViewRef: WeakReference<WebView>
+    private var mWebViewRef: java.lang.ref.WeakReference<WebView>
     private var mIsPermanent: Int = 0
     private var mInjectedName: String?
 
     init {
         mCouldGoOn = true
-        mWebViewRef = WeakReference(view)
+        mWebViewRef = java.lang.ref.WeakReference(view)
         mInjectedName = injectedName
         mIndex = index
     }
@@ -33,13 +28,13 @@ class JsCallback(view: WebView, injectedName: String?, index: Int) {
      * *
      * @throws JsCallbackException
      */
-    @Throws(JsCallbackException::class)
+    @Throws(android.baseframework.core.base.webview.handler.JsCallback.JsCallbackException::class)
     fun apply(vararg args: Any) {
         if (mWebViewRef.get() == null) {
-            throw JsCallbackException("the WebView related to the JsCallback has been recycled")
+            throw android.baseframework.core.base.webview.handler.JsCallback.JsCallbackException("the WebView related to the JsCallback has been recycled")
         }
         if (!mCouldGoOn) {
-            throw JsCallbackException("the JsCallback isn't permanent,cannot be called more than once")
+            throw android.baseframework.core.base.webview.handler.JsCallback.JsCallbackException("the JsCallback isn't permanent,cannot be called more than once")
         }
         val sb = StringBuilder()
         for (arg in args) {
@@ -67,16 +62,16 @@ class JsCallback(view: WebView, injectedName: String?, index: Int) {
      * @return
      */
     private fun isJavaScriptObject(obj: Any): Boolean {
-        if (obj is JSONObject || obj is JSONArray) {
+        if (obj is org.json.JSONObject || obj is org.json.JSONArray) {
             return true
         } else {
             val json = obj.toString()
             try {
-                JSONObject(json)
-            } catch (e: JSONException) {
+                org.json.JSONObject(json)
+            } catch (e: org.json.JSONException) {
                 try {
-                    JSONArray(json)
-                } catch (e1: JSONException) {
+                    org.json.JSONArray(json)
+                } catch (e1: org.json.JSONException) {
                     return false
                 }
 

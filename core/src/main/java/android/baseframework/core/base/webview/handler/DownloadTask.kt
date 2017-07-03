@@ -1,22 +1,12 @@
-package android.baseframework.core.base.webview
+package android.baseframework.core.base.webview.handler
 
-import android.app.PendingIntent
-import android.baseframework.core.R
 import android.baseframework.core.utils.closeSafely
-import android.content.Intent
-import android.os.AsyncTask
-import android.util.Log
-import android.widget.Toast
-import com.orhanobut.logger.Logger
-import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 
 /**
  * Created by Neil Zheng on 2017/6/22.
  */
 
-class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
+class DownloadTask(val bean: DownloadBean) : android.os.AsyncTask<Unit, Int, Int>() {
 
     private var loaded: Long = 0L
     private val totals: Long = -1L
@@ -62,15 +52,15 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
 
     override fun onPostExecute(result: Int?) {
         if (result == ERROR_LOAD) {
-            Toast.makeText(bean.context, "下载出错了", Toast.LENGTH_SHORT).show()
+            android.widget.Toast.makeText(bean.context, "下载出错了", android.widget.Toast.LENGTH_SHORT).show()
             downloadNotification.cancel(bean.notificationId)
             return
         }
         downloadNotification.cancel(bean.notificationId)
-        val intent = WebViewUtils.getIntentCompat(bean.context, bean.file)
-        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val rightPendIntent = PendingIntent.getActivity(bean.context,
-                0x110, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val intent = android.baseframework.core.base.webview.WebViewUtils.Companion.getIntentCompat(bean.context, bean.file)
+        intent.flags = android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val rightPendIntent = android.app.PendingIntent.getActivity(bean.context,
+                0x110, intent, android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         downloadNotification.setProgressFinish("点击打开", rightPendIntent)
     }
 
@@ -84,12 +74,12 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
 
     override fun onPreExecute() {
         super.onPreExecute()
-        buildNotify(Intent(), "正在下载中")
+        buildNotify(android.content.Intent(), "正在下载中")
     }
 
-    private fun buildNotify(intent: Intent, progressHint: String) {
-        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val rightPendIntent = PendingIntent.getActivity(bean.context, 0x33, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    private fun buildNotify(intent: android.content.Intent, progressHint: String) {
+        intent.flags = android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val rightPendIntent = android.app.PendingIntent.getActivity(bean.context, 0x33, intent, android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         val ticker = "您有一条新通知"
         downloadNotification = DownloadNotification(bean.notificationId, bean.context)
         downloadNotification.notify_progress(rightPendIntent, android.R.mipmap.sym_def_app_icon, ticker,
@@ -97,9 +87,9 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
         downloadNotification.sent()
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     private fun doDownLoad(): Int {
-        val mHttpURLConnection = URL(bean.url).openConnection() as HttpURLConnection
+        val mHttpURLConnection = java.net.URL(bean.url).openConnection() as java.net.HttpURLConnection
         mHttpURLConnection.setRequestProperty("Accept", "application/*")
         mHttpURLConnection.connectTimeout = 5000
         if (bean.file.length() > 0) {
@@ -111,8 +101,8 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
             return ERROR_LOAD
         }
         try {
-            return doDownLoad(mHttpURLConnection.inputStream, object : RandomAccessFile(bean.file, "rw") {
-                @Throws(IOException::class)
+            return doDownLoad(mHttpURLConnection.inputStream, object : java.io.RandomAccessFile(bean.file, "rw") {
+                @Throws(java.io.IOException::class)
                 override fun write(buffer: ByteArray, offset: Int, count: Int) {
                     super.write(buffer, offset, count)
                     loaded += count.toLong()
@@ -127,15 +117,15 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
     private fun checkDownLoaderCondition(): Boolean {
         if (!checkNetwork())
             return false
-        if (bean.length - bean.file.length() > WebViewUtils.getAvailableStorage()) {
+        if (bean.length - bean.file.length() > android.baseframework.core.base.webview.WebViewUtils.Companion.getAvailableStorage()) {
             return false
         }
         return true
     }
 
-    private fun doDownLoad(input: InputStream, output: RandomAccessFile): Int {
+    private fun doDownLoad(input: java.io.InputStream, output: java.io.RandomAccessFile): Int {
         val buffer = ByteArray(102400)
-        val bis = BufferedInputStream(input, 102400)
+        val bis = java.io.BufferedInputStream(input, 102400)
         try {
             output.seek(output.length())
             var bytes = 0
@@ -167,6 +157,6 @@ class DownloadTask(val bean: DownloadBean) : AsyncTask<Unit, Int, Int>() {
     }
 
     private fun checkNetwork(): Boolean {
-        return WebViewUtils.checkNetwork(bean.context)
+        return android.baseframework.core.base.webview.WebViewUtils.Companion.checkNetwork(bean.context)
     }
 }
