@@ -9,6 +9,9 @@ import android.os.Message
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.webkit.*
+import java.util.*
+import android.webkit.WebView
+import com.orhanobut.logger.Logger
 
 
 /**
@@ -18,6 +21,12 @@ import android.webkit.*
 open class BaseWebViewClient(val webView: WebView, val context: Context) : WebViewClient() {
 
     private var urlHandler: UrlHandler = UrlHandler(context)
+    private val urls: Stack<String> = Stack()
+    private var depth = 0
+    private val depths = Stack<Pair<String, Int>>()
+    private var urlBefore302: String? = null
+    private var isLoading = false
+    private var isBacking = false
 
     fun addUrlListener(listener: IUrlListener) {
         urlHandler.addUrlListener(listener)
@@ -28,6 +37,9 @@ open class BaseWebViewClient(val webView: WebView, val context: Context) : WebVi
     }
 
     override fun onPageFinished(view: WebView?, url: String?) {
+        if (isLoading || (null != url && url.startsWith("about:"))) {
+            isLoading = false
+        }
         if (!urlHandler.onPageFinished(view, url)) {
             super.onPageFinished(view, url)
         }
@@ -62,6 +74,19 @@ open class BaseWebViewClient(val webView: WebView, val context: Context) : WebVi
     }
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        if (!isBacking && null != url) {
+            depths.push(Pair(url, depth++))
+            if (isLoading && urls.isNotEmpty()) {
+                urlBefore302 = urls.pop()
+            }
+            if (!TextUtils.isEmpty(url) && !url.equals(getLastPageUrl(), true)) {
+                urls.push(url)
+            } else if (!TextUtils.isEmpty(urlBefore302)) {
+                urls.push(urlBefore302)
+                urlBefore302 = null
+            }
+            isLoading = true
+        }
         if (!urlHandler.onPageStarted(view, url, favicon)) {
             super.onPageStarted(view, url, favicon)
         }
@@ -145,6 +170,38 @@ open class BaseWebViewClient(val webView: WebView, val context: Context) : WebVi
                 context.startActivity(intent)
                 return true
             }
+        }
+        return false
+    }
+
+    @Synchronized private fun getLastPageUrl(): String? {
+        return if (urls.isNotEmpty()) urls.peek() else null
+    }
+
+    private fun popLastPageUrl(): String? {
+        return if (urls.size > 1) urls.pop() else null
+    }
+
+    private fun getBackLength(url: String): Int {
+        var result = 0
+        do {
+            val pair = depths.pop()
+            val popUrl = pair.first
+            if (TextUtils.equals(url, popUrl)) {
+                result = pair.second - depth
+                depth = pair.second
+                break
+            }
+        } while (depths.isNotEmpty())
+        return result
+    }
+
+    fun pageGoBack(): Boolean {
+        val url = popLastPageUrl()
+        if (url != null) {
+            isBacking = true
+            webView.goBackOrForward(getBackLength(url))
+            return true
         }
         return false
     }

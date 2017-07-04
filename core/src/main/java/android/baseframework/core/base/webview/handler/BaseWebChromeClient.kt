@@ -166,8 +166,7 @@ class BaseWebChromeClient(val webView: android.webkit.WebView, context: android.
     }
 
     private fun getDefaultVideoLoadingProgressView(): android.view.View? {
-        videoProgressView = android.view.LayoutInflater.from(webView.context).inflate(android.baseframework.core.R.layout.layout_video_progress, null)
         //TODO("style the VideoProgress layout")
-        return videoProgressView;
+        return null
     }
 }

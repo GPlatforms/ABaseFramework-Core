@@ -15,9 +15,7 @@ class BaseWebView : android.webkit.WebView {
     private val jsCaller: JsCaller = JsCaller(this@BaseWebView)
 
     constructor(context: android.content.Context) : super(context)
-
     constructor(context: android.content.Context, attrs: android.util.AttributeSet) : super(context, attrs)
-
     constructor(context: android.content.Context, attrs: android.util.AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
@@ -83,6 +81,10 @@ class BaseWebView : android.webkit.WebView {
         setWebViewClient(webViewClient)
         setWebChromeClient(webViewChromeClient)
         setDownloadListener(webViewDownloadListener)
+    }
+
+    fun handleBackAction(): Boolean {
+        return webViewClient.pageGoBack()
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {

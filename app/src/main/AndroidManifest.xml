@@ -20,10 +20,9 @@
         <activity
             android:name=".webview.SimpleWebViewActivity"
             android:configChanges="orientation|screenSize"
-            android:hardwareAccelerated="true"/>
-        <activity android:name=".webview.TestWebViewActivity"/>
-        <activity android:name=".webview.Test2WebViewActivity"
+            android:hardwareAccelerated="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity android:name=".webview.TestWebViewActivity"/>
     </application>
 
 </manifest>
