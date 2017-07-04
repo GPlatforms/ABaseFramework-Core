@@ -2,12 +2,11 @@ package android.baseframework.core.base.webview
 
 import android.app.Activity
 import android.app.Fragment
+import android.support.v4.app.Fragment as SupportFragment
 import android.baseframework.core.base.webview.handler.IChromeListener
 import android.baseframework.core.base.webview.handler.IUrlListener
 import android.baseframework.core.base.webview.handler.SimpleChromeListener
-import android.baseframework.core.base.webview.handler.SimpleUrlListener
 import android.baseframework.core.base.webview.widget.*
-import android.graphics.Bitmap
 import android.support.v7.widget.LinearLayoutCompat
 import android.text.TextUtils
 import android.view.View
@@ -24,6 +23,7 @@ import android.widget.LinearLayout
 class WebFacade(var activity: Activity) {
 
     constructor(fragment: Fragment) : this(fragment.activity)
+    constructor(fragment: SupportFragment) : this(fragment.activity)
 
     private lateinit var webView: BaseWebView
     private var parent: ViewGroup? = null
@@ -184,13 +184,5 @@ class WebFacade(var activity: Activity) {
     private fun inflateDefaultProgressBar() {
         progressBar = DefaultProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal,
                 android.R.style.Widget_ProgressBar_Horizontal)
-    }
-
-    fun onBackPressed(): Boolean {
-        if (webView.canGoBack()) {
-            webView.goBack()
-            return true
-        }
-        return false
     }
 }

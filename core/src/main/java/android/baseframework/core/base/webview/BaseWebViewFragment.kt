@@ -1,22 +1,28 @@
 package android.baseframework.core.base.webview
 
-import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.BaseCoreFragment
 import android.baseframework.core.base.webview.handler.IChromeListener
 import android.baseframework.core.base.webview.handler.IUrlListener
 import android.baseframework.core.base.webview.widget.BaseWebView
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutCompat
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.ValueCallback
+import com.github.ikidou.fragmentBackHandler.FragmentBackHandler
 
 /**
- * Created by Neil Zheng on 2017/6/15.
+ * Created by Neil Zheng on 2017/7/4.
  */
 
-abstract class BaseWebViewActivity : BaseCoreActivity() {
+abstract class BaseWebViewFragment: BaseCoreFragment() {
 
     companion object {
+        val EXTRA_URL = "EXTRA_URL"
+        val EXTRA_TITLE = "EXTRA_TITLE"
+        val EXTRA_RECEIVE_TITLE = "EXTRA_RECEIVE_TITLE"
         val REQUEST_UPLOAD_FILE = 3
     }
 
@@ -25,11 +31,14 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
     private lateinit var webView: BaseWebView
     private var receiveTitleFlag = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val root = LinearLayoutCompat(this@BaseWebViewActivity)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val root = LinearLayoutCompat(context)
         root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        setContentView(root)
+        return root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         initIntentData()
         initWebView()
     }
@@ -63,10 +72,8 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         webView.reload()
     }
 
-    override fun onBackPressed() {
-        if (!webView.handleBackAction()) {
-            super.onBackPressed()
-        }
+    override fun onBackPressed(): Boolean {
+        return webView.handleBackAction()
     }
 
     override fun onPause() {
@@ -85,17 +92,17 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
     }
 
     private fun initIntentData() {
-        if (intent.hasExtra(WebViewConfig.EXTRA_URL)) {
-            url = intent.getStringExtra(WebViewConfig.EXTRA_URL)
+        if (arguments.containsKey(EXTRA_URL)) {
+            url = arguments.getString(EXTRA_URL)
         }
-        if(intent.hasExtra(WebViewConfig.EXTRA_TITLE)) {
-            title = intent.getStringExtra(WebViewConfig.EXTRA_TITLE)
+        if(arguments.containsKey(EXTRA_TITLE)) {
+            title = arguments.getString(EXTRA_TITLE)
         }
-        receiveTitleFlag = intent.getBooleanExtra(WebViewConfig.EXTRA_RECEIVE_TITLE, true)
+        receiveTitleFlag = arguments.getBoolean(EXTRA_RECEIVE_TITLE, true)
     }
 
     private fun initWebView() {
-        webView = WebFacade(this@BaseWebViewActivity)
+        webView = WebFacade(this@BaseWebViewFragment)
                 .showTitleBar(true)
                 .showProgressBar(true)
                 .receiveTitle(receiveTitleFlag)
@@ -103,4 +110,5 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
                 .title(title)
                 .build()
     }
+
 }

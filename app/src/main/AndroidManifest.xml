@@ -22,6 +22,11 @@
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".webview.SimpleWebViewFragmentActivity"
+            android:configChanges="orientation|screenSize"
+            android:hardwareAccelerated="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity android:name=".webview.TestWebViewActivity"/>
     </application>
 

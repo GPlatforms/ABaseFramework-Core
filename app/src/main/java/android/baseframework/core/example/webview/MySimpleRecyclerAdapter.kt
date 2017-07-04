@@ -1,6 +1,7 @@
 package android.baseframework.core.example.webview
 
 import android.baseframework.core.base.webview.BaseWebViewActivity
+import android.baseframework.core.base.webview.WebViewConfig
 import android.baseframework.core.example.R
 import android.baseframework.core.utils.startActivity
 import android.content.Intent
@@ -23,8 +24,8 @@ class MySimpleRecyclerAdapter(val list: Array<String>) : RecyclerView.Adapter<Re
         if (holder is MyViewHolder) {
             holder.button.text = list[position]
             holder.button.setOnClickListener {
-                val intent = Intent(holder.itemView.context, SimpleWebViewActivity::class.java)
-                intent.putExtra(BaseWebViewActivity.EXTRA_URL, list[position])
+                val intent = Intent(holder.itemView.context, SimpleWebViewFragmentActivity::class.java)
+                intent.putExtra(WebViewConfig.EXTRA_URL, list[position])
                 holder.itemView.context.startActivity(intent)
             }
         }
