@@ -5,13 +5,8 @@ import android.baseframework.core.base.webview.handler.IChromeListener
 import android.baseframework.core.base.webview.handler.IUrlListener
 import android.baseframework.core.base.webview.widget.BaseWebView
 import android.content.Intent
-import android.os.Bundle
-import android.support.v7.widget.LinearLayoutCompat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.webkit.ValueCallback
-import com.github.ikidou.fragmentBackHandler.FragmentBackHandler
+import com.orhanobut.logger.Logger
 
 /**
  * Created by Neil Zheng on 2017/7/4.
@@ -19,92 +14,77 @@ import com.github.ikidou.fragmentBackHandler.FragmentBackHandler
 
 abstract class BaseWebViewFragment: BaseCoreFragment() {
 
-    companion object {
-        val EXTRA_URL = "EXTRA_URL"
-        val EXTRA_TITLE = "EXTRA_TITLE"
-        val EXTRA_RECEIVE_TITLE = "EXTRA_RECEIVE_TITLE"
-        val REQUEST_UPLOAD_FILE = 3
-    }
-
-    private var url: String? = null
-    private var title: String? = null
-    private lateinit var webView: BaseWebView
-    private var receiveTitleFlag = true
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = LinearLayoutCompat(context)
-        root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        return root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        initIntentData()
-        initWebView()
-    }
+    protected var url: String? = null
+    protected var title: String? = null
+    protected var webView: BaseWebView? = null
+    protected var receiveTitleFlag = true
+    protected var showTitleBar = true
+    protected var showProgressBar = true
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        webView.onActivityResult(requestCode, resultCode, data)
+        webView?.onActivityResult(requestCode, resultCode, data)
     }
 
     protected fun addUrlListener(listener: IUrlListener) {
-        webView.addUrlHandler(listener)
+        webView?.addUrlHandler(listener)
     }
 
     protected fun addChromeListener(listener: IChromeListener) {
-        webView.addChromeHandler(listener)
+        webView?.addChromeHandler(listener)
     }
 
     protected fun loadUrl(url: String) {
-        webView.loadUrl(url)
+        webView?.loadUrl(url)
     }
 
     protected fun loadJs(js: String) {
-        webView.quickCallJs(js)
+        webView?.quickCallJs(js)
     }
 
     protected fun loadJs(js: String, callback: ValueCallback<String>?, vararg params: String) {
-        webView.quickCallJs(js, callback, *params)
+        webView?.quickCallJs(js, callback, *params)
     }
 
     protected fun reload() {
-        webView.reload()
+        webView?.reload()
     }
 
     override fun onBackPressed(): Boolean {
-        return webView.handleBackAction()
+        return webView?.handleBackAction() ?: false
     }
 
     override fun onPause() {
         super.onPause()
-        webView.doPause()
+        webView?.doPause()
     }
 
     override fun onResume() {
         super.onResume()
-        webView.doResume()
+        webView?.doResume()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        webView.doDestroy()
+        webView?.doDestroy()
     }
 
-    private fun initIntentData() {
-        if (arguments.containsKey(EXTRA_URL)) {
-            url = arguments.getString(EXTRA_URL)
+    override fun initIntentData() {
+        if (arguments.containsKey(WebViewConfig.EXTRA_URL)) {
+            url = arguments.getString(WebViewConfig.EXTRA_URL)
         }
-        if(arguments.containsKey(EXTRA_TITLE)) {
-            title = arguments.getString(EXTRA_TITLE)
+        if(arguments.containsKey(WebViewConfig.EXTRA_TITLE)) {
+            title = arguments.getString(WebViewConfig.EXTRA_TITLE)
         }
-        receiveTitleFlag = arguments.getBoolean(EXTRA_RECEIVE_TITLE, true)
+        receiveTitleFlag = arguments.getBoolean(WebViewConfig.EXTRA_RECEIVE_TITLE, true)
+        showTitleBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_TITLEBAR, true)
+        showProgressBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_PROGRESSBAR, true)
     }
 
-    private fun initWebView() {
+    override fun initData() {
         webView = WebFacade(this@BaseWebViewFragment)
-                .showTitleBar(true)
-                .showProgressBar(true)
+                .showTitleBar(showTitleBar)
+                .showProgressBar(showProgressBar)
                 .receiveTitle(receiveTitleFlag)
                 .url(url)
                 .title(title)

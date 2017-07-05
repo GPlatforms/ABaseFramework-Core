@@ -20,18 +20,16 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         val REQUEST_UPLOAD_FILE = 3
     }
 
-    private var url: String? = null
-    private var title: String? = null
-    private lateinit var webView: BaseWebView
-    private var receiveTitleFlag = true
+    protected var url: String? = null
+    protected var title: String? = null
+    protected lateinit var webView: BaseWebView
+    protected var receiveTitleFlag = true
+    protected var showTitleBar = true
+    protected var showProgressBar = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val root = LinearLayoutCompat(this@BaseWebViewActivity)
-        root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        setContentView(root)
         initIntentData()
-        initWebView()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -84,7 +82,7 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
         webView.doDestroy()
     }
 
-    private fun initIntentData() {
+    protected open fun initIntentData() {
         if (intent.hasExtra(WebViewConfig.EXTRA_URL)) {
             url = intent.getStringExtra(WebViewConfig.EXTRA_URL)
         }
@@ -92,15 +90,7 @@ abstract class BaseWebViewActivity : BaseCoreActivity() {
             title = intent.getStringExtra(WebViewConfig.EXTRA_TITLE)
         }
         receiveTitleFlag = intent.getBooleanExtra(WebViewConfig.EXTRA_RECEIVE_TITLE, true)
-    }
-
-    private fun initWebView() {
-        webView = WebFacade(this@BaseWebViewActivity)
-                .showTitleBar(true)
-                .showProgressBar(true)
-                .receiveTitle(receiveTitleFlag)
-                .url(url)
-                .title(title)
-                .build()
+        showTitleBar = intent.getBooleanExtra(WebViewConfig.EXTRA_SHOW_TITLEBAR, true)
+        showProgressBar = intent.getBooleanExtra(WebViewConfig.EXTRA_SHOW_PROGRESSBAR, true)
     }
 }

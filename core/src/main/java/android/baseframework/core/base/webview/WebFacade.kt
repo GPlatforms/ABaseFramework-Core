@@ -7,6 +7,8 @@ import android.baseframework.core.base.webview.handler.IChromeListener
 import android.baseframework.core.base.webview.handler.IUrlListener
 import android.baseframework.core.base.webview.handler.SimpleChromeListener
 import android.baseframework.core.base.webview.widget.*
+import android.content.Context
+import android.os.Build
 import android.support.v7.widget.LinearLayoutCompat
 import android.text.TextUtils
 import android.view.View
@@ -20,13 +22,11 @@ import android.widget.LinearLayout
  * Created by Neil Zheng on 2017/7/3.
  */
 
-class WebFacade(var activity: Activity) {
+class WebFacade {
 
-    constructor(fragment: Fragment) : this(fragment.activity)
-    constructor(fragment: SupportFragment) : this(fragment.activity)
-
+    private var context: Context
     private lateinit var webView: BaseWebView
-    private var parent: ViewGroup? = null
+    private lateinit var parent: ViewGroup
     private var layoutParams: ViewGroup.LayoutParams? = null
     private var chromeClients = arrayListOf<IChromeListener>()
     private var webClients = arrayListOf<IUrlListener>()
@@ -39,6 +39,25 @@ class WebFacade(var activity: Activity) {
     private var titleBar: DefaultTitleBar? = null
     private var progressBar: DefaultProgressBar? = null
     private var downloadListener: DownloadListener? = null
+
+    constructor(activity: Activity) {
+        context = activity
+        parent = activity.findViewById(android.R.id.content) as ViewGroup
+    }
+
+    constructor(fragment: Fragment) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            context = fragment.context
+        } else {
+            context = fragment.activity
+        }
+        parent = fragment.view as ViewGroup
+    }
+
+    constructor(fragment: SupportFragment) {
+        context = fragment.context
+        parent = fragment.view as ViewGroup
+    }
 
     fun parent(parent: ViewGroup,
                layoutParams: ViewGroup.LayoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -106,7 +125,7 @@ class WebFacade(var activity: Activity) {
     }
 
     fun build(): BaseWebView {
-        webView = BaseWebView(activity)
+        webView = BaseWebView(context)
         for (item in chromeClients) {
             webView.addChromeHandler(item)
         }
@@ -116,18 +135,15 @@ class WebFacade(var activity: Activity) {
         if (null != downloadListener) {
             webView.setDownloadListener(downloadListener)
         }
-        if (null == parent) {
-            parent = activity.findViewById(android.R.id.content) as ViewGroup
-        }
         if (null == layoutParams) {
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT)
         }
-        val rootContainer = LinearLayoutCompat(activity)
+        val rootContainer = LinearLayoutCompat(context)
         rootContainer.orientation = LinearLayout.VERTICAL
         rootContainer.layoutParams = LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT,
                 LinearLayoutCompat.LayoutParams.MATCH_PARENT)
-        val webViewContainer = FrameLayout(activity)
+        val webViewContainer = FrameLayout(context)
         webViewContainer.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT)
         rootContainer.addView(webViewContainer)
@@ -161,7 +177,7 @@ class WebFacade(var activity: Activity) {
                 }
 
                 override fun onReceivedTitle(view: WebView?, title: String?): Boolean {
-                    if (receiveTitle && !TextUtils.isEmpty(title)) {
+                    if (showTitleBar && receiveTitle && !TextUtils.isEmpty(title)) {
                         titleBar!!.title = title
                     }
                     return false
@@ -178,11 +194,11 @@ class WebFacade(var activity: Activity) {
     }
 
     private fun inflateDefaultTitleBar() {
-        titleBar = DefaultTitleBar(activity)
+        titleBar = DefaultTitleBar(context)
     }
 
     private fun inflateDefaultProgressBar() {
-        progressBar = DefaultProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal,
+        progressBar = DefaultProgressBar(context, null, android.R.attr.progressBarStyleHorizontal,
                 android.R.style.Widget_ProgressBar_Horizontal)
     }
 }

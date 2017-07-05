@@ -9,24 +9,37 @@ import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import kotlinx.android.synthetic.main.item_webview_simple_recyclerview.*
 
 /**
  * Created by Neil Zheng on 2017/6/26.
  */
-class MySimpleRecyclerAdapter(val list: Array<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MySimpleRecyclerAdapter(val list: Array<String>) : RecyclerView.Adapter<BaseViewHolder>() {
 
-    override fun onCreateViewHolder(vg: ViewGroup?, position: Int): RecyclerView.ViewHolder {
+    private var onClickListener: BaseViewHolder.onItemClickListener? = null
+    private var onLongClickListener: BaseViewHolder.onItemLongClickListener? = null
+
+    fun setOnClickListener(listener: BaseViewHolder.onItemClickListener) {
+        onClickListener = listener
+    }
+
+    fun setOnLongClickListener(listener: BaseViewHolder.onItemLongClickListener) {
+        onLongClickListener = listener
+    }
+
+    override fun onCreateViewHolder(vg: ViewGroup?, position: Int): BaseViewHolder {
         return MyViewHolder(View.inflate(vg?.context, R.layout.item_webview_simple_recyclerview, null));
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder?, position: Int) {
         if (holder is MyViewHolder) {
             holder.button.text = list[position]
-            holder.button.setOnClickListener {
-                val intent = Intent(holder.itemView.context, SimpleWebViewFragmentActivity::class.java)
-                intent.putExtra(WebViewConfig.EXTRA_URL, list[position])
-                holder.itemView.context.startActivity(intent)
+            if (null != onClickListener) {
+                holder.itemView.setOnClickListener { onClickListener!!.onItemClick(position) }
+            }
+            if (null != onLongClickListener) {
+                holder.itemView.setOnLongClickListener { onLongClickListener!!.onItemLongClick(position) }
             }
         }
     }
@@ -39,10 +52,8 @@ class MySimpleRecyclerAdapter(val list: Array<String>) : RecyclerView.Adapter<Re
         return list.size
     }
 
-    class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
+    class MyViewHolder(view: View) : BaseViewHolder(view) {
         var button: AppCompatButton = view.findViewById(R.id.button) as AppCompatButton
-
     }
 
 }
