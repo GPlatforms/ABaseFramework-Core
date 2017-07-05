@@ -13,6 +13,7 @@ abstract class BaseCoreFragment : Fragment(), IFragment, FragmentBackHandler {
     private var rootView: View? = null
     private var initialized = false
     private var isVisibleToUser = false
+    private var isInViewPager = false
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (null == rootView) {
@@ -27,7 +28,7 @@ abstract class BaseCoreFragment : Fragment(), IFragment, FragmentBackHandler {
         super.onActivityCreated(savedInstanceState)
         initView()
         initIntentData()
-        if (isVisibleToUser && !initialized) {
+        if ((!isInViewPager || isVisibleToUser) && !initialized) {
             initData()
             initialized = true
         }
@@ -44,6 +45,7 @@ abstract class BaseCoreFragment : Fragment(), IFragment, FragmentBackHandler {
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         this.isVisibleToUser = isVisibleToUser
+        isInViewPager = true
         if (isAdded) {
             if (isVisibleToUser) {
                 onResumeView()
