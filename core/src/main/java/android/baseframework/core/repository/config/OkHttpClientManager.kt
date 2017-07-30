@@ -1,7 +1,6 @@
 package android.baseframework.core.repository.config
 
-import android.baseframework.core.config.Global
-import com.jayfeng.lesscode.core.EncodeLess
+import android.baseframework.core.config.BCGlobal
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -50,7 +49,7 @@ class OkHttpClientManager {
     }
 
     private fun getOkHttpCache(): Cache {
-        val cacheFile = File(Global.context?.cacheDir, "OkCache")
+        val cacheFile = File(BCGlobal.context?.cacheDir, "OkCache")
         val cache = Cache(cacheFile, 1024 * 1024 * 50)
         return cache
     }

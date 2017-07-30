@@ -1,37 +1,27 @@
 package android.baseframework.core.repository.config
 
 import android.baseframework.core.config.Api
-import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
 object RetrofitManager {
 
-    private fun buildBaseRetrofit(): Retrofit.Builder {
+    fun getRetrofit(): Retrofit {
         val retrofitBuilder = Retrofit.Builder()
                 .client(OkHttpClientManager.getInstance().createOkHttpClient())
-        retrofitBuilder.baseUrl(Api.SERVER_URL)
-        return retrofitBuilder
-    }
-
-    fun getRetrofit(): Retrofit {
-        return buildBaseRetrofit()
                 .addConverterFactory(GsonConverterFactory.create())
-                .build()
+        retrofitBuilder.baseUrl(Api.SERVER_URL)
+        return retrofitBuilder.build()
     }
 
-    fun getRetrofitWithFormatDate(): Retrofit {
-        val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
-        return buildBaseRetrofit()
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-    }
-
-    fun getScalarsRetrofit(): Retrofit {
-        return buildBaseRetrofit()
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
+    fun getRxRetrofit(): Retrofit {
+        val retrofitBuilder = Retrofit.Builder()
+                .client(OkHttpClientManager.getInstance().createOkHttpClient())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        retrofitBuilder.baseUrl(Api.SERVER_URL)
+        return retrofitBuilder.build()
     }
 }

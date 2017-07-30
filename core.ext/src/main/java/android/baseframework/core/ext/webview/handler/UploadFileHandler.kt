@@ -48,7 +48,6 @@ class UploadFileHandler(val context: android.content.Context) {
         }
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && callback != null) {
-                com.orhanobut.logger.Logger.e("3")
                 val array: Array<android.net.Uri>? = handleData(data)
                 callback!!.onReceiveValue(array)
             }

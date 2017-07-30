@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">core</string>
+
+    <!-- common -->
+    <string name="bc_network_weak_try">网络不佳，请稍候再试</string>
+    <string name="bc_server_error">出错了，请稍候再试</string>
+    <string name="bc_empty_empty_text">您还没有收到任何消息</string>
+    <string name="bc_empty_network_text">您的网络出现了故障</string>
+    <string name="bc_empty_error_text">出错了，请稍候再试</string>
 </resources>

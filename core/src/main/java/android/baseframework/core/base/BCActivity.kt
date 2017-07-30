@@ -1,9 +1,9 @@
 package android.baseframework.core.base
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 
-abstract class BCActivity : AppCompatActivity() {
+abstract class BCActivity : RxAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

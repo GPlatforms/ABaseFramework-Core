@@ -1,10 +1,6 @@
 package android.baseframework.core.example
 
-import android.baseframework.core.BaseCoreApp
-import android.content.Context
+import android.baseframework.core.BCApp
 
-/**
- * Created by Neil Zheng on 2017/6/15.
- */
 
-class MyApp : BaseCoreApp()
+class MyApp : BCApp()

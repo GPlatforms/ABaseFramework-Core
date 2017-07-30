@@ -1,14 +1,14 @@
 package android.baseframework.core
 
 import android.app.Application
-import android.baseframework.core.config.Global
+import android.baseframework.core.config.BCGlobal
 
 
-open class BaseCoreApp: Application() {
+open class BCApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        Global.context = this
+        BCGlobal.context = this
     }
 }
