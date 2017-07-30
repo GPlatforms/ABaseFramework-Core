@@ -43,9 +43,7 @@ class OkHttpClientManager {
 
         val newRequestBuilder = originalRequest.newBuilder()
 
-        newRequestBuilder.header("X-LC-Id", "TVrc4NCgBT7DtLnL1mrjlFwg-gzGzoHsz")
         val timestamp = System.currentTimeMillis()
-        newRequestBuilder.header("X-LC-Sign", EncodeLess.`$md5`(timestamp.toString() + "ofWyXDaU2Lzca6ntCpvvrCsj") + "," + timestamp + ",master")
         newRequestBuilder.header("Content-Type", "application/json")
 
         chain.proceed(newRequestBuilder.build())

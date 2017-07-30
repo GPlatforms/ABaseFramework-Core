@@ -49,9 +49,9 @@ abstract class BaseWebViewFragment: BaseCoreFragment() {
         webView?.reload()
     }
 
-    override fun onBackPressed(): Boolean {
-        return webView?.handleBackAction() ?: false
-    }
+//    override fun onBackPressed(): Boolean {
+//        return webView?.handleBackAction() ?: false
+//    }
 
     override fun onPause() {
         super.onPause()
@@ -68,26 +68,26 @@ abstract class BaseWebViewFragment: BaseCoreFragment() {
         webView?.doDestroy()
     }
 
-    override fun initIntentData() {
-        if (arguments.containsKey(WebViewConfig.EXTRA_URL)) {
-            url = arguments.getString(WebViewConfig.EXTRA_URL)
-        }
-        if(arguments.containsKey(WebViewConfig.EXTRA_TITLE)) {
-            title = arguments.getString(WebViewConfig.EXTRA_TITLE)
-        }
-        receiveTitleFlag = arguments.getBoolean(WebViewConfig.EXTRA_RECEIVE_TITLE, true)
-        showTitleBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_TITLEBAR, true)
-        showProgressBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_PROGRESSBAR, true)
-    }
-
-    override fun initData() {
-        webView = WebFacade(this@BaseWebViewFragment)
-                .showTitleBar(showTitleBar)
-                .showProgressBar(showProgressBar)
-                .receiveTitle(receiveTitleFlag)
-                .url(url)
-                .title(title)
-                .build()
-    }
+//    override fun initIntentData() {
+//        if (arguments.containsKey(WebViewConfig.EXTRA_URL)) {
+//            url = arguments.getString(WebViewConfig.EXTRA_URL)
+//        }
+//        if(arguments.containsKey(WebViewConfig.EXTRA_TITLE)) {
+//            title = arguments.getString(WebViewConfig.EXTRA_TITLE)
+//        }
+//        receiveTitleFlag = arguments.getBoolean(WebViewConfig.EXTRA_RECEIVE_TITLE, true)
+//        showTitleBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_TITLEBAR, true)
+//        showProgressBar = arguments.getBoolean(WebViewConfig.EXTRA_SHOW_PROGRESSBAR, true)
+//    }
+//
+//    override fun initData() {
+//        webView = WebFacade(this@BaseWebViewFragment)
+//                .showTitleBar(showTitleBar)
+//                .showProgressBar(showProgressBar)
+//                .receiveTitle(receiveTitleFlag)
+//                .url(url)
+//                .title(title)
+//                .build()
+//    }
 
 }

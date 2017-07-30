@@ -1,7 +1,6 @@
 package android.baseframework.core.example.webview
 
 import android.baseframework.core.ext.webview.BaseWebViewFragment
-import android.baseframework.core.example.R
 
 /**
  * Created by Neil Zheng on 2017/7/4.
@@ -9,8 +8,8 @@ import android.baseframework.core.example.R
 
 class SimpleWebViewFragment : BaseWebViewFragment() {
 
-    override val layoutId: Int
-        get() = R.layout.fragment_webview_test_fragment_activity
+//    override val layoutId: Int
+//        get() = R.layout.fragment_webview_test_fragment_activity
 
 
 }
