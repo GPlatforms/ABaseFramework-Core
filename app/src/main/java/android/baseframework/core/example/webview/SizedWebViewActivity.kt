@@ -1,14 +1,13 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.webview.BaseWebViewActivity
-import android.baseframework.core.base.webview.WebFacade
 import android.baseframework.core.example.R
+import android.baseframework.core.ext.webview.BaseWebViewActivity
+import android.baseframework.core.ext.webview.WebFacade
 import android.baseframework.core.utils.dp2px
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_webview_test_2.*
 

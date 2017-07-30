@@ -1,6 +1,6 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.webview.BaseWebViewFragment
+import android.baseframework.core.ext.webview.BaseWebViewFragment
 import android.baseframework.core.example.R
 
 /**

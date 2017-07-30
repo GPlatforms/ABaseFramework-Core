@@ -1,20 +1,13 @@
 package android.baseframework.core.example.webview
 
 import android.baseframework.core.base.BaseCoreActivity
-import android.baseframework.core.base.webview.WebViewConfig
-import android.baseframework.core.base.webview.widget.BaseWebView
 import android.baseframework.core.example.R
+import android.baseframework.core.ext.webview.WebViewConfig
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.PagerAdapter
-import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_webview_test_viewpager.*
-import kotlinx.android.synthetic.main.activity_webview_test_viewpager.view.*
 
-/**
- * Created by Neil Zheng on 2017/7/4.
- */
 
 class SimpleWebViewViewPagerActivity : BaseCoreActivity() {
 

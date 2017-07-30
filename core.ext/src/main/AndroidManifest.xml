@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="android.baseframework.core.ext">
+
+    <permission android:name="android.intent.action.CALL" />
+
+    <application>
+        <provider
+            android:name="android.baseframework.core.ext.webview.handler.WebViewFileProvider"
+            android:authorities="${applicationId}.WebViewFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/web_download_paths" />
+        </provider>
+    </application>
+</manifest>

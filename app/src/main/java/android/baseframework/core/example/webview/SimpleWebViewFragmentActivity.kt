@@ -1,7 +1,7 @@
 package android.baseframework.core.example.webview
 
 import android.baseframework.core.base.BaseCoreActivity
-import android.baseframework.core.base.webview.WebViewConfig
+import android.baseframework.core.ext.webview.WebViewConfig
 import android.baseframework.core.example.R
 import android.os.Bundle
 

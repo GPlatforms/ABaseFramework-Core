@@ -1,14 +1,11 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.webview.BaseWebViewActivity
-import android.baseframework.core.base.webview.WebFacade
+import android.baseframework.core.ext.webview.BaseWebViewActivity
+import android.baseframework.core.ext.webview.WebFacade
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutCompat
 import android.view.ViewGroup
 
-/**
- * Created by Neil Zheng on 2017/6/15.
- */
 
 class SimpleWebViewActivity : BaseWebViewActivity() {
 
