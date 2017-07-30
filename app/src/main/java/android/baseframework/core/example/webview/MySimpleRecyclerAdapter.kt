@@ -1,16 +1,10 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.webview.BaseWebViewActivity
-import android.baseframework.core.base.webview.WebViewConfig
 import android.baseframework.core.example.R
-import android.baseframework.core.utils.startActivity
-import android.content.Intent
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import kotlinx.android.synthetic.main.item_webview_simple_recyclerview.*
 
 /**
  * Created by Neil Zheng on 2017/6/26.
@@ -53,7 +47,7 @@ class MySimpleRecyclerAdapter(val list: Array<String>) : RecyclerView.Adapter<Ba
     }
 
     class MyViewHolder(view: View) : BaseViewHolder(view) {
-        var button: AppCompatButton = view.findViewById(R.id.button) as AppCompatButton
+        var button: AppCompatButton = view.findViewById<AppCompatButton>(R.id.button)
     }
 
 }

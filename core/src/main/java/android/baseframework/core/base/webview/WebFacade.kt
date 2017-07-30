@@ -42,7 +42,7 @@ class WebFacade {
 
     constructor(activity: Activity) {
         context = activity
-        parent = activity.findViewById(android.R.id.content) as ViewGroup
+        parent = activity.findViewById<ViewGroup>(android.R.id.content)
     }
 
     constructor(fragment: Fragment) {
