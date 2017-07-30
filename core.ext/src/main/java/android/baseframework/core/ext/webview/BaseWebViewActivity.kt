@@ -1,6 +1,6 @@
 package android.baseframework.core.ext.webview
 
-import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.BCActivity
 import android.baseframework.core.ext.webview.handler.IChromeListener
 import android.baseframework.core.ext.webview.handler.IUrlListener
 import android.baseframework.core.ext.webview.widget.BaseWebView
@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.webkit.ValueCallback
 
 
-abstract class BaseWebViewActivity : BaseCoreActivity() {
+abstract class BaseWebViewActivity : BCActivity() {
 
     companion object {
         val REQUEST_UPLOAD_FILE = 3

@@ -1,6 +1,6 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.BCActivity
 import android.baseframework.core.ext.webview.WebViewConfig
 import android.baseframework.core.example.R
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.os.Bundle
  * Created by Neil Zheng on 2017/7/4.
  */
 
-class SimpleWebViewFragmentActivity: BaseCoreActivity() {
+class SimpleWebViewFragmentActivity: BCActivity() {
 
     private var url: String? = null
     private var title: String? = null

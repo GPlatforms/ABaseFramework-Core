@@ -1,6 +1,6 @@
 package android.baseframework.core.ext.webview
 
-import android.baseframework.core.base.BaseCoreFragment
+import android.baseframework.core.base.BCFragment
 import android.baseframework.core.ext.webview.handler.IChromeListener
 import android.baseframework.core.ext.webview.handler.IUrlListener
 import android.baseframework.core.ext.webview.widget.BaseWebView
@@ -11,7 +11,7 @@ import android.webkit.ValueCallback
  * Created by Neil Zheng on 2017/7/4.
  */
 
-abstract class BaseWebViewFragment: BaseCoreFragment() {
+abstract class BaseWebViewFragment: BCFragment() {
 
     protected var url: String? = null
     protected var title: String? = null

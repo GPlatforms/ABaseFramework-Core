@@ -1,6 +1,6 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.BCActivity
 import android.baseframework.core.example.R
 import android.baseframework.core.ext.webview.WebViewConfig
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import kotlinx.android.synthetic.main.activity_webview_test_viewpager.*
 
 
-class SimpleWebViewViewPagerActivity : BaseCoreActivity() {
+class SimpleWebViewViewPagerActivity : BCActivity() {
 
     private val list = arrayOf("http://www.vip.com",
             "https://h5.m.jd.com/active/download/download.html?channel=jd-msy1",

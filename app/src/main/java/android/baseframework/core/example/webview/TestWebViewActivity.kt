@@ -1,6 +1,6 @@
 package android.baseframework.core.example.webview
 
-import android.baseframework.core.base.BaseCoreActivity
+import android.baseframework.core.base.BCActivity
 import android.baseframework.core.ext.webview.WebViewConfig
 import android.baseframework.core.example.R
 import android.baseframework.core.utils.startActivity
@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_webview_test_webview.*
  * Created by Neil Zheng on 2017/6/26.
  */
 
-class TestWebViewActivity : BaseCoreActivity() {
+class TestWebViewActivity : BCActivity() {
 
     private val list = arrayOf("http://www.vip.com",
             "https://h5.m.jd.com/active/download/download.html?channel=jd-msy1",
