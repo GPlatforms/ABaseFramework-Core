@@ -13,8 +13,10 @@ import android.view.View
 import com.jayfeng.lesscode.core.AdapterLess
 import com.jayfeng.lesscode.core.other.DividerItemDecoration
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener
 
-abstract class BCListActivity<T> : BCActivity() {
+open class BCListActivity<T> : BCActivity() {
 
     protected val PAGE_LIMIT = 10
 
@@ -45,9 +47,15 @@ abstract class BCListActivity<T> : BCActivity() {
         mErrorView = findViewById<BCErrorView>(R.id.error_view)
         mEmptyView!!.setEmptyText(getEmptyText())
 
-        mRefreshLayout!!.setOnLoadmoreListener {
-            moreData()
-        }
+        mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
+            override fun onLoadmore(refreshlayout: RefreshLayout?) {
+                moreData()
+            }
+
+            override fun onRefresh(refreshlayout: RefreshLayout?) {
+                requestData()
+            }
+        })
     }
 
     protected fun initLayoutManager() {
@@ -78,7 +86,7 @@ abstract class BCListActivity<T> : BCActivity() {
 
     protected fun moreListToView(dataList: List<T>) {
         mListData!!.addAll(dataList)
-        mAdapter!!.notifyDataSetChanged()
+        mAdapter.notifyDataSetChanged()
     }
 
     fun noMorePage() {
@@ -92,9 +100,9 @@ abstract class BCListActivity<T> : BCActivity() {
         mPage = 1
     }
 
-    protected fun requestData() {}
+    open fun requestData() {}
 
-    protected fun moreData() {}
+    open fun moreData() {}
 
     protected fun emptyOrErrorView(errorType: Int) {
         if (errorType == BCConstant.EMPTY_TYPE_EMPTY) {

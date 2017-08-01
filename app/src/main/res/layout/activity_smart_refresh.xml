@@ -18,12 +18,9 @@
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:overScrollMode="never"
             android:clipToPadding="false"/>
 
-        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srlProgressDrawable="@drawable/ic_index_dashboard"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
