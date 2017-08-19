@@ -11,11 +11,7 @@ import java.io.File
 class OkHttpClientManager {
 
     companion object {
-        fun getInstance() = Holder.instance
-    }
-
-    private object Holder {
-        val instance = OkHttpClientManager()
+        fun getInstance() = OkHttpClientManager()
     }
 
     fun createOkHttpClient() : OkHttpClient? {

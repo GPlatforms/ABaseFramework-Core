@@ -33,11 +33,11 @@ open class BCListActivity<T> : BCActivity() {
     protected var mPage = 1
     protected var mIsLoadingMore = false
 
-    protected fun initListView() {
+    open fun initListView() {
         mRefreshLayout = findViewById<SmartRefreshLayout>(R.id.refreshLayout)
-        mRefreshLayout!!.isEnableRefresh = isEnableRefresh()
-        mRefreshLayout!!.isEnableLoadmore = isEnableLoadMore()
-        mRefreshLayout!!.isEnableAutoLoadmore = isEnableAutoLoadMore()
+        mRefreshLayout?.isEnableRefresh = isEnableRefresh()
+        mRefreshLayout?.isEnableLoadmore = isEnableLoadMore()
+        mRefreshLayout?.isEnableAutoLoadmore = isEnableAutoLoadMore()
 
         mRecyclerView = findViewById(R.id.recyclerview)
 
@@ -45,7 +45,7 @@ open class BCListActivity<T> : BCActivity() {
 
         mEmptyView = findViewById<BCEmptyView>(R.id.empty_view)
         mErrorView = findViewById<BCErrorView>(R.id.error_view)
-        mEmptyView!!.setEmptyText(getEmptyText())
+        mEmptyView?.setEmptyText(getEmptyText())
 
         mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
             override fun onLoadmore(refreshlayout: RefreshLayout?) {
@@ -53,27 +53,30 @@ open class BCListActivity<T> : BCActivity() {
             }
 
             override fun onRefresh(refreshlayout: RefreshLayout?) {
+                resetPage()
                 requestData()
             }
         })
     }
 
-    protected fun initLayoutManager() {
+    open fun initLayoutManager() {
         // default LinearLayoutManager
         mLayoutManager = LinearLayoutManager(this)
         mRecyclerView?.layoutManager = mLayoutManager
 
-        mDividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
-        if (getDividerWidth() != -1) {
-            mDividerItemDecoration.setWidth(getDividerWidth())
+        if (isEnableDivider()) {
+            mDividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
+            if (getDividerWidth() != -1) {
+                mDividerItemDecoration.setWidth(getDividerWidth())
+            }
+            if (getDividerHeight() != -1) {
+                mDividerItemDecoration.setHeight(getDividerHeight())
+            }
+            mRecyclerView?.addItemDecoration(mDividerItemDecoration)
         }
-        if (getDividerHeight() != -1) {
-            mDividerItemDecoration.setHeight(getDividerHeight())
-        }
-        mRecyclerView?.addItemDecoration(mDividerItemDecoration)
     }
 
-    protected fun moreList(dataList: List<T>?) {
+    open fun moreList(dataList: List<T>?) {
         if (dataList == null || dataList.size == 0) {
             noMorePage()
         } else if (dataList.size < PAGE_LIMIT) {
@@ -84,19 +87,19 @@ open class BCListActivity<T> : BCActivity() {
         }
     }
 
-    protected fun moreListToView(dataList: List<T>) {
+    open fun moreListToView(dataList: List<T>) {
         mListData!!.addAll(dataList)
         mAdapter.notifyDataSetChanged()
     }
 
-    fun noMorePage() {
+    open fun noMorePage() {
     }
 
-    fun isLoadingMore(): Boolean {
+    open fun isLoadingMore(): Boolean {
         return mIsLoadingMore
     }
 
-    fun resetPage() {
+    open fun resetPage() {
         mPage = 1
     }
 
@@ -104,7 +107,7 @@ open class BCListActivity<T> : BCActivity() {
 
     open fun moreData() {}
 
-    protected fun emptyOrErrorView(errorType: Int) {
+    open fun emptyOrErrorView(errorType: Int) {
         if (errorType == BCConstant.EMPTY_TYPE_EMPTY) {
             mEmptyView?.visibility = View.VISIBLE
             mEmptyView?.setEmptyText(R.string.bc_empty_empty_text)
@@ -119,31 +122,35 @@ open class BCListActivity<T> : BCActivity() {
         }
     }
 
-    protected fun getEmptyText(): String {
+    open fun getEmptyText(): String {
         return ""
     }
 
-    protected fun getDividerDrawable(): Drawable {
+    open fun getDividerDrawable(): Drawable {
         return ColorDrawable(Color.parseColor("#66000000"))
     }
 
-    protected fun getDividerWidth(): Int {
+    open fun getDividerWidth(): Int {
         return -1
     }
 
-    protected fun getDividerHeight(): Int {
+    open fun getDividerHeight(): Int {
         return 0
     }
 
-    protected fun isEnableRefresh(): Boolean {
+    open fun isEnableDivider(): Boolean {
         return true
     }
 
-    protected fun isEnableLoadMore(): Boolean {
+    open fun isEnableRefresh(): Boolean {
         return true
     }
 
-    protected fun isEnableAutoLoadMore(): Boolean {
+    open fun isEnableLoadMore(): Boolean {
+        return true
+    }
+
+    open fun isEnableAutoLoadMore(): Boolean {
         return true
     }
 }

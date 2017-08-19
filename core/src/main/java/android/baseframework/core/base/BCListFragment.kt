@@ -13,6 +13,8 @@ import android.view.View
 import com.jayfeng.lesscode.core.AdapterLess
 import com.jayfeng.lesscode.core.other.DividerItemDecoration
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener
 
 
 abstract class BCListFragment<T> : BCFragment() {
@@ -32,41 +34,50 @@ abstract class BCListFragment<T> : BCFragment() {
     protected var mPage = 1
     protected var mIsLoadingMore = false
 
-    protected fun initListView(rootView: View) {
+    open fun initListView(rootView: View) {
         mRefreshLayout = rootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout)
-        mRefreshLayout!!.isEnableRefresh = isEnableRefresh()
-        mRefreshLayout!!.isEnableLoadmore = isEnableLoadMore()
-        mRefreshLayout!!.isEnableAutoLoadmore = isEnableAutoLoadMore()
+        mRefreshLayout?.isEnableRefresh = isEnableRefresh()
+        mRefreshLayout?.isEnableLoadmore = isEnableLoadMore()
+        mRefreshLayout?.isEnableAutoLoadmore = isEnableAutoLoadMore()
 
-        mRecyclerView = view!!.findViewById(R.id.recyclerview)
+        mRecyclerView = rootView?.findViewById(R.id.recyclerview)
 
         initLayoutManager()
 
         mEmptyView = rootView.findViewById<BCEmptyView>(R.id.empty_view)
         mErrorView = rootView.findViewById<BCErrorView>(R.id.error_view)
-        mEmptyView!!.setEmptyText(getEmptyText())
+        mEmptyView?.setEmptyText(getEmptyText())
 
-        mRefreshLayout!!.setOnLoadmoreListener {
-            moreData()
-        }
+        mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
+            override fun onLoadmore(refreshlayout: RefreshLayout?) {
+                moreData()
+            }
+
+            override fun onRefresh(refreshlayout: RefreshLayout?) {
+                resetPage()
+                requestData()
+            }
+        })
     }
 
-    protected fun initLayoutManager() {
+    open fun initLayoutManager() {
         // default LinearLayoutManager
         mLayoutManager = LinearLayoutManager(context)
         mRecyclerView?.layoutManager = mLayoutManager
 
-        mDividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
-        if (getDividerWidth() != -1) {
-            mDividerItemDecoration.setWidth(getDividerWidth())
+        if (isEnableDivider()) {
+            mDividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
+            if (getDividerWidth() != -1) {
+                mDividerItemDecoration.setWidth(getDividerWidth())
+            }
+            if (getDividerHeight() != -1) {
+                mDividerItemDecoration.setHeight(getDividerHeight())
+            }
+            mRecyclerView?.addItemDecoration(mDividerItemDecoration)
         }
-        if (getDividerHeight() != -1) {
-            mDividerItemDecoration.setHeight(getDividerHeight())
-        }
-        mRecyclerView?.addItemDecoration(mDividerItemDecoration)
     }
 
-    protected fun moreList(dataList: List<T>?) {
+    open fun moreList(dataList: List<T>?) {
         if (dataList == null || dataList.size == 0) {
             noMorePage()
         } else if (dataList.size < PAGE_LIMIT) {
@@ -77,9 +88,9 @@ abstract class BCListFragment<T> : BCFragment() {
         }
     }
 
-    protected fun moreListToView(dataList: List<T>) {
-        mListData!!.addAll(dataList)
-        mAdapter!!.notifyDataSetChanged()
+    open fun moreListToView(dataList: List<T>) {
+        mListData?.addAll(dataList)
+        mAdapter?.notifyDataSetChanged()
     }
 
     fun noMorePage() {
@@ -93,11 +104,11 @@ abstract class BCListFragment<T> : BCFragment() {
         mPage = 1
     }
 
-    protected fun requestData() {}
+    open fun requestData() {}
 
-    protected fun moreData() {}
+    open fun moreData() {}
 
-    protected fun emptyOrErrorView(errorType: Int) {
+    open fun emptyOrErrorView(errorType: Int) {
         if (errorType == BCConstant.EMPTY_TYPE_EMPTY) {
             mEmptyView?.visibility = View.VISIBLE
             mEmptyView?.setEmptyText(R.string.bc_empty_empty_text)
@@ -112,31 +123,35 @@ abstract class BCListFragment<T> : BCFragment() {
         }
     }
 
-    protected fun getEmptyText(): String {
+    open fun getEmptyText(): String {
         return ""
     }
 
-    protected fun getDividerDrawable(): Drawable {
+    open fun getDividerDrawable(): Drawable {
         return ColorDrawable(Color.parseColor("#66000000"))
     }
 
-    protected fun getDividerWidth(): Int {
+    open fun getDividerWidth(): Int {
         return -1
     }
 
-    protected fun getDividerHeight(): Int {
+    open fun getDividerHeight(): Int {
         return 0
     }
 
-    protected fun isEnableRefresh(): Boolean {
+    open fun isEnableDivider(): Boolean {
         return true
     }
 
-    protected fun isEnableLoadMore(): Boolean {
+    open fun isEnableRefresh(): Boolean {
         return true
     }
 
-    protected fun isEnableAutoLoadMore(): Boolean {
+    open fun isEnableLoadMore(): Boolean {
+        return true
+    }
+
+    open fun isEnableAutoLoadMore(): Boolean {
         return true
     }
 }
