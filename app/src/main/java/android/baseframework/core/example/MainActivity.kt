@@ -15,6 +15,8 @@ class MainActivity : BCActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initHeaderBar(R.string.app_name, false)
+
 
         Toast.makeText(this, Api.getNextNextUrl(), Toast.LENGTH_SHORT).show()
 //        startActivity(TestWebViewActivity::class.java)

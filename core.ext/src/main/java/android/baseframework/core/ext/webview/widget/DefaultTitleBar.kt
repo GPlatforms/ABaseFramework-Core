@@ -1,7 +1,7 @@
 package android.baseframework.core.ext.webview.widget
 
 import android.app.Activity
-import android.baseframework.core.R
+import android.baseframework.core.ext.R
 import android.baseframework.core.utils.dp2pxf
 import android.content.Context
 import android.support.v7.widget.Toolbar

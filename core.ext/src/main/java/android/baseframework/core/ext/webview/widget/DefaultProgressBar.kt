@@ -1,6 +1,6 @@
 package android.baseframework.core.ext.webview.widget
 
-import android.baseframework.core.R
+import android.baseframework.core.ext.R
 import android.baseframework.core.utils.dp2px
 import android.baseframework.core.utils.dp2pxf
 import android.content.Context
