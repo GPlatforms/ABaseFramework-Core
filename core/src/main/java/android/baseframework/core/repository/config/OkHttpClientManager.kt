@@ -25,6 +25,7 @@ class OkHttpClientManager {
                 .addInterceptor(headerInterceptor)
                 .addInterceptor(logInterceptor)
                 .cache(getOkHttpCache())
+                .retryOnConnectionFailure(true)
                 .build()
 
         return okHttpClient

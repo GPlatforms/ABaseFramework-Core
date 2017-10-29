@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "android.baseframework.core.example"
         minSdkVersion 15
@@ -29,14 +29,14 @@ dependencies {
     implementation project(':core')
 
     //noinspection GradleCompatible
-    implementation 'com.android.support:appcompat-v7:26.0.2'
-    implementation 'com.jayfeng:android-update:2.3'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.jayfeng:android-update:3.0.1'
 
     implementation 'com.jayfeng:lesscode-core:2.3'
     implementation 'com.jayfeng:lesscode-ui:0.1.1'
     implementation 'com.jayfeng:lesscode-headerbar:1.4'
     implementation 'com.jayfeng:lesscode-adapter:0.2'
-    implementation 'com.jayfeng:lesscode-debug:2.0'
+    implementation 'com.jayfeng:lesscode-debug:2.2'
     implementation 'com.orhanobut:logger:1.15'
 
     implementation 'io.reactivex.rxjava2:rxjava:2.1.2'
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'

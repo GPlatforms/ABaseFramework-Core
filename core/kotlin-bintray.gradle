@@ -1,5 +1,5 @@
 group = PROJ_GROUP
-version = "0.4.1"
+version = "0.5"
 project.archivesBaseName = "core"
 
 apply plugin: 'com.jfrog.bintray'
