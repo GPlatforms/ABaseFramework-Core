@@ -5,6 +5,8 @@ import android.baseframework.core.example.model.User
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.jayfeng.lesscode.core.AdapterLess
 
 class SmartRefreshActivity : BCListActivity<User>() {
@@ -27,16 +29,17 @@ class SmartRefreshActivity : BCListActivity<User>() {
         for (i in 1..20) {
             mListData?.add(User("$i", "name$i"))
 
-            mAdapter = AdapterLess.`$recycler`(this, mListData, R.layout.activity_smart_refresh_item, object: AdapterLess.RecyclerCallBack<User> {
+            mAdapter = object: BaseQuickAdapter<User, BaseViewHolder>(R.layout.activity_smart_refresh_item, mListData) {
+                override fun convert(helper: BaseViewHolder, user: User) {
 
-                override fun onBindViewHolder(pos: Int, viewHolder: AdapterLess.RecyclerViewHolder, user: User) {
-                    var uidView = viewHolder.`$view`<TextView>(R.id.uid)
-                    var nicknameView = viewHolder.`$view`<TextView>(R.id.nickname)
+                    val uidView = helper.getView<TextView>(R.id.uid)
+                    val nicknameView = helper.getView<TextView>(R.id.nickname)
 
                     uidView.text = user.uid
                     nicknameView.text = user.nickname
                 }
-            })
+            }
+
             mRecyclerView?.adapter = mAdapter
 
         }

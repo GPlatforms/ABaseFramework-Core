@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.jayfeng.lesscode.core.AdapterLess
 import com.jayfeng.lesscode.core.other.DividerItemDecoration
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -25,7 +27,7 @@ open class BCListActivity<T> : BCActivity() {
     protected var mRefreshLayout: SmartRefreshLayout? = null
     protected var mRecyclerView: RecyclerView? = null
     protected var mLayoutManager: RecyclerView.LayoutManager? = null
-    protected lateinit var mAdapter: RecyclerView.Adapter<AdapterLess.RecyclerViewHolder>
+    protected lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
     protected lateinit var mDividerItemDecoration: DividerItemDecoration
     protected var mEmptyView: BCEmptyView? = null
     protected var mErrorView: BCErrorView? = null
