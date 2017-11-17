@@ -40,7 +40,7 @@ abstract class BCListFragment<T> : BCFragment() {
         mRefreshLayout?.isEnableLoadmore = isEnableLoadMore()
         mRefreshLayout?.isEnableAutoLoadmore = isEnableAutoLoadMore()
 
-        mRecyclerView = rootView?.findViewById(R.id.recyclerview)
+        mRecyclerView = rootView.findViewById(R.id.recyclerview)
 
         initLayoutManager()
 
