@@ -1,9 +1,7 @@
 package android.baseframework.core.base
 
 import android.baseframework.core.R
-import android.baseframework.core.config.BCConstant
-import android.baseframework.core.widget.BCEmptyView
-import android.baseframework.core.widget.BCErrorView
+import android.baseframework.core.widget.BCStateView
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -12,7 +10,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.jayfeng.lesscode.core.AdapterLess
 import com.jayfeng.lesscode.core.other.DividerItemDecoration
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.api.RefreshLayout
@@ -30,11 +27,15 @@ abstract class BCListFragment<T> : BCFragment() {
     protected var mLayoutManager: RecyclerView.LayoutManager? = null
     protected lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
     protected lateinit var mDividerItemDecoration: DividerItemDecoration
-    protected var mEmptyView: BCEmptyView? = null
-    protected var mErrorView: BCErrorView? = null
+    protected lateinit var mStateView: BCStateView
 
     protected var mPage = 1
     protected var mIsLoadingMore = false
+
+    open fun initStateView() {
+        mStateView = BCStateView(context)
+        mStateView.showLoading()
+    }
 
     open fun initListView(rootView: View) {
         mRefreshLayout = rootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout)
@@ -45,10 +46,6 @@ abstract class BCListFragment<T> : BCFragment() {
         mRecyclerView = rootView.findViewById(R.id.recyclerview)
 
         initLayoutManager()
-
-        mEmptyView = rootView.findViewById<BCEmptyView>(R.id.empty_view)
-        mErrorView = rootView.findViewById<BCErrorView>(R.id.error_view)
-        mEmptyView?.setEmptyText(getEmptyText())
 
         mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
             override fun onLoadmore(refreshlayout: RefreshLayout?) {
@@ -109,21 +106,6 @@ abstract class BCListFragment<T> : BCFragment() {
     open fun requestData() {}
 
     open fun moreData() {}
-
-    open fun emptyOrErrorView(errorType: Int) {
-        if (errorType == BCConstant.EMPTY_TYPE_EMPTY) {
-            mEmptyView?.visibility = View.VISIBLE
-            mEmptyView?.setEmptyText(R.string.bc_empty_empty_text)
-        } else if (errorType == BCConstant.EMPTY_TYPE_NETWORK) {
-            mEmptyView?.visibility = View.VISIBLE
-            mEmptyView?.setEmptyText(R.string.bc_empty_network_text)
-        } else if (errorType == BCConstant.EMPTY_TYPE_ERROR) {
-            mEmptyView?.visibility = View.VISIBLE
-            mEmptyView?.setEmptyText(R.string.bc_empty_error_text)
-        } else {
-            mEmptyView?.visibility = View.GONE
-        }
-    }
 
     open fun getEmptyText(): String {
         return ""
