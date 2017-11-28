@@ -16,7 +16,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener
 
 
-abstract class BCListFragment<T> : BCFragment() {
+open class BCListFragment<T> : BCFragment() {
 
     protected val PAGE_LIMIT = 10
 
@@ -38,31 +38,33 @@ abstract class BCListFragment<T> : BCFragment() {
     }
 
     open fun initListView(rootView: View) {
-        mRefreshLayout = rootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout)
-        mRefreshLayout?.isEnableRefresh = isEnableRefresh()
-        mRefreshLayout?.isEnableLoadmore = isEnableLoadMore()
-        mRefreshLayout?.isEnableAutoLoadmore = isEnableAutoLoadMore()
-
         mRecyclerView = rootView.findViewById(R.id.recyclerview)
+        mRefreshLayout = rootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout).apply {
 
-        initLayoutManager()
+            isEnableRefresh = isEnableRefresh
+            isEnableLoadmore = isEnableLoadMore()
+            isEnableAutoLoadmore = isEnableAutoLoadMore()
 
-        mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
-            override fun onLoadmore(refreshlayout: RefreshLayout?) {
-                moreData()
-            }
+            initLayoutManager()
 
-            override fun onRefresh(refreshlayout: RefreshLayout?) {
-                resetPage()
-                requestData()
-            }
-        })
+            setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
+                override fun onLoadmore(refreshlayout: RefreshLayout?) {
+                    moreData()
+                }
+
+                override fun onRefresh(refreshlayout: RefreshLayout?) {
+                    resetPage()
+                    requestData()
+                }
+            })
+        }
     }
 
     open fun initLayoutManager() {
         // default LinearLayoutManager
-        mLayoutManager = LinearLayoutManager(context)
-        mRecyclerView?.layoutManager = mLayoutManager
+        mLayoutManager = LinearLayoutManager(context).also {
+            mRecyclerView?.layoutManager = it
+        }
 
         if (isEnableDivider()) {
             mDividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
@@ -102,6 +104,8 @@ abstract class BCListFragment<T> : BCFragment() {
     fun resetPage() {
         mPage = 1
     }
+    
+    open fun showEmptyView() {}
 
     open fun requestData() {}
 

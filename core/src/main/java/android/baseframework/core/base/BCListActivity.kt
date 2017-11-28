@@ -31,36 +31,40 @@ open class BCListActivity<T> : BCActivity() {
     protected var mIsLoadingMore = false
 
     open fun initStateView() {
-        mStateView = BCStateView(this)
-        mStateView.showLoading()
+        mStateView = BCStateView(this).apply {
+            showLoading()
+        }
     }
 
     open fun initListView() {
-        mRefreshLayout = findViewById<SmartRefreshLayout>(R.id.refreshLayout)
-        mRefreshLayout?.isEnableRefresh = isEnableRefresh()
-        mRefreshLayout?.isEnableLoadmore = isEnableLoadMore()
-        mRefreshLayout?.isEnableAutoLoadmore = isEnableAutoLoadMore()
-
         mRecyclerView = findViewById(R.id.recyclerview)
 
-        initLayoutManager()
+        mRefreshLayout = findViewById<SmartRefreshLayout>(R.id.refreshLayout).apply {
+            isEnableRefresh = isEnableRefresh
+            isEnableLoadmore = isEnableLoadMore()
+            isEnableAutoLoadmore = isEnableAutoLoadMore()
 
-        mRefreshLayout?.setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
-            override fun onLoadmore(refreshlayout: RefreshLayout?) {
-                moreData()
-            }
+            initLayoutManager()
 
-            override fun onRefresh(refreshlayout: RefreshLayout?) {
-                resetPage()
-                requestData()
-            }
-        })
+            setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
+                override fun onLoadmore(refreshlayout: RefreshLayout?) {
+                    moreData()
+                }
+
+                override fun onRefresh(refreshlayout: RefreshLayout?) {
+                    resetPage()
+                    requestData()
+                }
+            })
+        }
+
     }
 
     open fun initLayoutManager() {
         // default LinearLayoutManager
-        mLayoutManager = LinearLayoutManager(this)
-        mRecyclerView?.layoutManager = mLayoutManager
+        mLayoutManager = LinearLayoutManager(this).also {
+            mRecyclerView?.layoutManager = it
+        }
 
         if (isEnableDivider()) {
             mDividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
@@ -86,7 +90,7 @@ open class BCListActivity<T> : BCActivity() {
     }
 
     open fun moreListToView(dataList: List<T>) {
-        mListData!!.addAll(dataList)
+        mListData?.addAll(dataList)
         mAdapter.notifyDataSetChanged()
     }
 
@@ -100,6 +104,8 @@ open class BCListActivity<T> : BCActivity() {
     open fun resetPage() {
         mPage = 1
     }
+
+    open fun showEmptyView() {}
 
     open fun requestData() {}
 

@@ -19,6 +19,7 @@ class SmartRefreshActivity : BCListActivity<User>() {
         initLayoutManager()
 
         requestData()
+        showEmptyView()
     }
 
     override fun requestData() {
@@ -28,21 +29,20 @@ class SmartRefreshActivity : BCListActivity<User>() {
 
         for (i in 1..20) {
             mListData?.add(User("$i", "name$i"))
-
-            mAdapter = object: BaseQuickAdapter<User, BaseViewHolder>(R.layout.activity_smart_refresh_item, mListData) {
-                override fun convert(helper: BaseViewHolder, user: User) {
-
-                    val uidView = helper.getView<TextView>(R.id.uid)
-                    val nicknameView = helper.getView<TextView>(R.id.nickname)
-
-                    uidView.text = user.uid
-                    nicknameView.text = user.nickname
-                }
-            }
-
-            mRecyclerView?.adapter = mAdapter
-
         }
+
+        mAdapter = object: BaseQuickAdapter<User, BaseViewHolder>(R.layout.activity_smart_refresh_item, mListData) {
+            override fun convert(helper: BaseViewHolder, user: User) {
+
+                val uidView = helper.getView<TextView>(R.id.uid)
+                val nicknameView = helper.getView<TextView>(R.id.nickname)
+
+                uidView.text = user.uid
+                nicknameView.text = user.nickname
+            }
+        }
+
+        mRecyclerView?.adapter = mAdapter
 
         mRefreshLayout?.finishRefresh()
 
