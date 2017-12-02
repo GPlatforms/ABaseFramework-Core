@@ -3,7 +3,6 @@ package android.baseframework.core.base
 import android.app.Activity
 import android.baseframework.core.R
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.animation.Animation
@@ -36,7 +35,7 @@ open class BCFragment : RxFragment(), ISupportFragment {
         mHeaderBar = ViewLess.`$`(rootView, R.id.header)
         mHeaderBar?.setTitle(title)
         if (showBack) {
-            mHeaderBar?.showBack { activity.onBackPressed() }
+            mHeaderBar?.showBack { activity?.onBackPressed() }
         }
     }
 
@@ -63,7 +62,7 @@ open class BCFragment : RxFragment(), ISupportFragment {
         _mActivity = mDelegate.activity
     }
 
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mDelegate.onCreate(savedInstanceState)
     }
@@ -72,12 +71,12 @@ open class BCFragment : RxFragment(), ISupportFragment {
         return mDelegate.onCreateAnimation(transit, enter, nextAnim)
     }
 
-    override fun onActivityCreated(@Nullable savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mDelegate.onActivityCreated(savedInstanceState)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mDelegate.onSaveInstanceState(outState)
     }
@@ -139,7 +138,7 @@ open class BCFragment : RxFragment(), ISupportFragment {
      *
      * 同级下的 懒加载 ＋ ViewPager下的懒加载  的结合回调方法
      */
-    override fun onLazyInitView(@Nullable savedInstanceState: Bundle?) {
+    override fun onLazyInitView(savedInstanceState: Bundle?) {
         mDelegate.onLazyInitView(savedInstanceState)
     }
 

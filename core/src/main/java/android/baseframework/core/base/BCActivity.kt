@@ -10,8 +10,6 @@ import me.yokeyword.fragmentation.SupportActivityDelegate
 import me.yokeyword.fragmentation.SupportHelper
 import me.yokeyword.fragmentation.ISupportFragment
 import android.support.annotation.DrawableRes
-import android.support.annotation.NonNull
-import android.support.annotation.Nullable
 import me.yokeyword.fragmentation.anim.FragmentAnimator
 import android.view.MotionEvent
 import me.yokeyword.fragmentation.ExtraTransaction
@@ -61,12 +59,12 @@ open class BCActivity : RxAppCompatActivity(), ISupportActivity {
         return mDelegate.extraTransaction()
     }
 
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mDelegate.onCreate(savedInstanceState)
     }
 
-    override fun onPostCreate(@Nullable savedInstanceState: Bundle?) {
+    override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         mDelegate.onPostCreate(savedInstanceState)
     }
@@ -137,7 +135,7 @@ open class BCActivity : RxAppCompatActivity(), ISupportActivity {
      * @param containerId 容器id
      * @param toFragment  目标Fragment
      */
-    open fun loadRootFragment(containerId: Int, @NonNull toFragment: ISupportFragment) {
+    open fun loadRootFragment(containerId: Int, toFragment: ISupportFragment) {
         mDelegate.loadRootFragment(containerId, toFragment)
     }
 

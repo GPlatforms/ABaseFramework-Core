@@ -54,7 +54,7 @@ class WebFacade {
     }
 
     constructor(fragment: SupportFragment) {
-        context = fragment.context
+        context = fragment.context!!
         parent = fragment.view as ViewGroup
     }
 
