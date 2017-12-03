@@ -4,6 +4,13 @@
               android:layout_height="match_parent"
               android:gravity="center">
 
+    <FrameLayout
+        android:id="@+id/bc_state_custom_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/bc_state_loading_container"
         android:layout_width="match_parent"

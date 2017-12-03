@@ -20,8 +20,8 @@ open class BCListActivity<T> : BCActivity() {
 
     protected var mListData: MutableList<T>? = ArrayList()
 
-    protected var mRefreshLayout: SmartRefreshLayout? = null
-    protected var mRecyclerView: RecyclerView? = null
+    protected val mRefreshLayout: SmartRefreshLayout by lazy { findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
+    protected val mRecyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerview) }
     protected var mLayoutManager: RecyclerView.LayoutManager? = null
     protected lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
     protected lateinit var mDividerItemDecoration: DividerItemDecoration
@@ -37,9 +37,7 @@ open class BCListActivity<T> : BCActivity() {
     }
 
     open fun initListView() {
-        mRecyclerView = findViewById(R.id.recyclerview)
-
-        mRefreshLayout = findViewById<SmartRefreshLayout>(R.id.refreshLayout).apply {
+        with(mRefreshLayout) {
             isEnableRefresh = isEnableRefresh
             isEnableLoadmore = isEnableLoadMore()
             isEnableAutoLoadmore = isEnableAutoLoadMore()
@@ -63,7 +61,7 @@ open class BCListActivity<T> : BCActivity() {
     open fun initLayoutManager() {
         // default LinearLayoutManager
         mLayoutManager = LinearLayoutManager(this).also {
-            mRecyclerView?.layoutManager = it
+            mRecyclerView.layoutManager = it
         }
 
         if (isEnableDivider()) {
@@ -74,7 +72,7 @@ open class BCListActivity<T> : BCActivity() {
             if (getDividerHeight() != -1) {
                 mDividerItemDecoration.setHeight(getDividerHeight())
             }
-            mRecyclerView?.addItemDecoration(mDividerItemDecoration)
+            mRecyclerView.addItemDecoration(mDividerItemDecoration)
         }
     }
 

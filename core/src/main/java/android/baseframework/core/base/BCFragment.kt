@@ -32,10 +32,11 @@ open class BCFragment : RxFragment(), ISupportFragment {
     }
 
     open fun initHeaderBar(rootView: View, title: String, showBack: Boolean) {
-        mHeaderBar = ViewLess.`$`(rootView, R.id.header)
-        mHeaderBar?.setTitle(title)
-        if (showBack) {
-            mHeaderBar?.showBack { activity?.onBackPressed() }
+        mHeaderBar = rootView.findViewById<HeaderBar>(R.id.header).apply {
+            setTitle(title)
+            if (showBack) {
+                showBack { activity?.onBackPressed() }
+            }
         }
     }
 

@@ -31,10 +31,11 @@ open class BCActivity : RxAppCompatActivity(), ISupportActivity {
     }
 
     open fun initHeaderBar(title: String, showBack: Boolean) {
-        mHeaderBar = ViewLess.`$`(this, R.id.header)
-        mHeaderBar?.setTitle(title)
-        if (showBack) {
-            mHeaderBar?.showBack { onBackPressed() }
+        mHeaderBar = findViewById<HeaderBar>(R.id.header).apply {
+            setTitle(title)
+            if (showBack) {
+                showBack { onBackPressed() }
+            }
         }
     }
 

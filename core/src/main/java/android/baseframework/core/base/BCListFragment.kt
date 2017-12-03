@@ -22,8 +22,9 @@ open class BCListFragment<T> : BCFragment() {
 
     protected var mListData: MutableList<T>? = ArrayList()
 
-    protected var mRefreshLayout: SmartRefreshLayout? = null
-    protected var mRecyclerView: RecyclerView? = null
+    protected lateinit var mRootView: View
+    protected val mRefreshLayout: SmartRefreshLayout by lazy { mRootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
+    protected val mRecyclerView: RecyclerView by lazy { mRootView.findViewById<RecyclerView>(R.id.recyclerview) }
     protected var mLayoutManager: RecyclerView.LayoutManager? = null
     protected lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
     protected lateinit var mDividerItemDecoration: DividerItemDecoration
@@ -37,10 +38,8 @@ open class BCListFragment<T> : BCFragment() {
         mStateView.showLoading()
     }
 
-    open fun initListView(rootView: View) {
-        mRecyclerView = rootView.findViewById(R.id.recyclerview)
-        mRefreshLayout = rootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout).apply {
-
+    open fun initListView() {
+        with(mRefreshLayout) {
             isEnableRefresh = isEnableRefresh
             isEnableLoadmore = isEnableLoadMore()
             isEnableAutoLoadmore = isEnableAutoLoadMore()
@@ -63,7 +62,7 @@ open class BCListFragment<T> : BCFragment() {
     open fun initLayoutManager() {
         // default LinearLayoutManager
         mLayoutManager = LinearLayoutManager(context).also {
-            mRecyclerView?.layoutManager = it
+            mRecyclerView.layoutManager = it
         }
 
         if (isEnableDivider()) {
@@ -74,7 +73,7 @@ open class BCListFragment<T> : BCFragment() {
             if (getDividerHeight() != -1) {
                 mDividerItemDecoration.setHeight(getDividerHeight())
             }
-            mRecyclerView?.addItemDecoration(mDividerItemDecoration)
+            mRecyclerView.addItemDecoration(mDividerItemDecoration)
         }
     }
 
