@@ -22,7 +22,6 @@ open class BCListFragment<T> : BCFragment() {
 
     protected var mListData: MutableList<T>? = ArrayList()
 
-    protected lateinit var mRootView: View
     protected val mRefreshLayout: SmartRefreshLayout by lazy { mRootView.findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
     protected val mRecyclerView: RecyclerView by lazy { mRootView.findViewById<RecyclerView>(R.id.recyclerview) }
     protected var mLayoutManager: RecyclerView.LayoutManager? = null

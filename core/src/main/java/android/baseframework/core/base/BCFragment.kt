@@ -18,6 +18,8 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator
 
 open class BCFragment : RxFragment(), ISupportFragment {
 
+    open lateinit var mRootView:View
+
     val mDelegate = SupportFragmentDelegate(this)
     var _mActivity: FragmentActivity? = null
     var mHeaderBar: HeaderBar? = null
@@ -44,6 +46,13 @@ open class BCFragment : RxFragment(), ISupportFragment {
         initHeaderBar(rootView, title, false)
     }
 
+    open fun isRootViewInit(): Boolean {
+        return ::mRootView.isInitialized
+    }
+
+    open fun test() {
+
+    }
 
     override fun getSupportDelegate(): SupportFragmentDelegate {
         return mDelegate
