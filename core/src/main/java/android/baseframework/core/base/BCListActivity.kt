@@ -18,7 +18,7 @@ open class BCListActivity<T> : BCActivity() {
 
     protected val PAGE_LIMIT = 10
 
-    protected var mListData: MutableList<T>? = ArrayList()
+    protected val mListData: MutableList<T> = arrayListOf()
 
     protected val mRefreshLayout: SmartRefreshLayout by lazy { findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
     protected val mRecyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerview) }
@@ -88,7 +88,7 @@ open class BCListActivity<T> : BCActivity() {
     }
 
     open fun moreListToView(dataList: List<T>) {
-        mListData?.addAll(dataList)
+        mListData.addAll(dataList)
         mAdapter.notifyDataSetChanged()
     }
 
