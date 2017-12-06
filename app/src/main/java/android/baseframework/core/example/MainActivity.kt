@@ -3,7 +3,6 @@ package android.baseframework.core.example
 import android.baseframework.core.base.BCActivity
 import android.baseframework.core.config.Api
 import android.baseframework.core.example.extension.getNextNextUrl
-import android.baseframework.core.example.webview.TestWebViewActivity
 import android.baseframework.core.utils.startActivity
 import android.content.Intent
 import android.os.Bundle

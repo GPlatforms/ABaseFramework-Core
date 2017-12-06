@@ -6,35 +6,37 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.animation.Animation
-import com.jayfeng.lesscode.core.ViewLess
 import com.jayfeng.lesscode.headerbar.HeaderBar
 import com.trello.rxlifecycle2.components.support.RxFragment
 import me.yokeyword.fragmentation.ExtraTransaction
 import me.yokeyword.fragmentation.ISupportFragment
 import me.yokeyword.fragmentation.SupportFragmentDelegate
-import me.yokeyword.fragmentation.SupportHelper
 import me.yokeyword.fragmentation.anim.FragmentAnimator
 
 
 open class BCFragment : RxFragment(), ISupportFragment {
 
-    open lateinit var mRootView:View
+    lateinit var mRootView:View
+    var mRootViewInitialized = false
+        get() = ::mRootView.isInitialized
 
     val mDelegate = SupportFragmentDelegate(this)
     var _mActivity: FragmentActivity? = null
-    var mHeaderBar: HeaderBar? = null
+    val mHeaderBar by lazy { mRootView.findViewById<HeaderBar>(R.id.header) }
 
     /**
      * *****************************************************************
      * optional init base views: header bar, loading view
      * *****************************************************************
      */
-    open fun initHeaderBar(rootView: View, titleId: Int, showBack: Boolean) {
+    @JvmOverloads
+    open fun initHeaderBar(rootView: View, titleId: Int, showBack: Boolean = false) {
         initHeaderBar(rootView, getString(titleId), showBack)
     }
 
-    open fun initHeaderBar(rootView: View, title: String, showBack: Boolean) {
-        mHeaderBar = rootView.findViewById<HeaderBar>(R.id.header).apply {
+    @JvmOverloads
+    open fun initHeaderBar(rootView: View, title: String, showBack: Boolean = false) {
+        with(mHeaderBar) {
             setTitle(title)
             if (showBack) {
                 showBack { activity?.onBackPressed() }
@@ -42,18 +44,11 @@ open class BCFragment : RxFragment(), ISupportFragment {
         }
     }
 
-    open fun initHeaderBar(rootView: View, title: String) {
-        initHeaderBar(rootView, title, false)
-    }
-
-    open fun isRootViewInit(): Boolean {
-        return ::mRootView.isInitialized
-    }
-
-    open fun test() {
-
-    }
-
+    /**
+     * *****************************************************************
+     * Fragmentation
+     * *****************************************************************
+     */
     override fun getSupportDelegate(): SupportFragmentDelegate {
         return mDelegate
     }
@@ -255,172 +250,5 @@ open class BCFragment : RxFragment(), ISupportFragment {
      */
     override fun putNewBundle(newBundle: Bundle) {
         mDelegate.putNewBundle(newBundle)
-    }
-
-
-    /****************************************以下为可选方法(Optional methods)******************************************************/
-
-    /**
-     * 隐藏软键盘
-     */
-    open fun hideSoftInput() {
-        mDelegate.hideSoftInput()
-    }
-
-    /**
-     * 显示软键盘,调用该方法后,会在onPause时自动隐藏软键盘
-     */
-    open fun showSoftInput(view: View) {
-        mDelegate.showSoftInput(view)
-    }
-
-    /**
-     * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
-     *
-     * @param containerId 容器id
-     * @param toFragment  目标Fragment
-     */
-    open fun loadRootFragment(containerId: Int, toFragment: ISupportFragment) {
-        mDelegate.loadRootFragment(containerId, toFragment)
-    }
-
-    open fun loadRootFragment(containerId: Int, toFragment: ISupportFragment, addToBackStack: Boolean, allowAnim: Boolean) {
-        mDelegate.loadRootFragment(containerId, toFragment, addToBackStack, allowAnim)
-    }
-
-    /**
-     * 加载多个同级根Fragment,类似Wechat, QQ主页的场景
-     */
-    open fun loadMultipleRootFragment(containerId: Int, showPosition: Int, vararg toFragments: ISupportFragment) {
-        mDelegate.loadMultipleRootFragment(containerId, showPosition, *toFragments)
-    }
-
-    /**
-     * show一个Fragment,hide其他同栈所有Fragment
-     * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
-     *
-     *
-     * 建议使用更明确的[.showHideFragment]
-     *
-     * @param showFragment 需要show的Fragment
-     */
-    open fun showHideFragment(showFragment: ISupportFragment) {
-        mDelegate.showHideFragment(showFragment)
-    }
-
-    /**
-     * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
-     */
-    open fun showHideFragment(showFragment: ISupportFragment, hideFragment: ISupportFragment) {
-        mDelegate.showHideFragment(showFragment, hideFragment)
-    }
-
-    open fun start(toFragment: ISupportFragment) {
-        mDelegate.start(toFragment)
-    }
-
-    /**
-     * @param launchMode Similar to Activity's LaunchMode.
-     */
-    open fun start(toFragment: ISupportFragment, @ISupportFragment.LaunchMode launchMode: Int) {
-        mDelegate.start(toFragment, launchMode)
-    }
-
-    /**
-     * Launch an fragment for which you would like a result when it poped.
-     */
-    open fun startForResult(toFragment: ISupportFragment, requestCode: Int) {
-        mDelegate.startForResult(toFragment, requestCode)
-    }
-
-    /**
-     * Launch a fragment while poping self.
-     */
-    open fun startWithPop(toFragment: ISupportFragment) {
-        mDelegate.startWithPop(toFragment)
-    }
-
-    open fun replaceFragment(toFragment: ISupportFragment, addToBackStack: Boolean) {
-        mDelegate.replaceFragment(toFragment, addToBackStack)
-    }
-
-    open fun pop() {
-        mDelegate.pop()
-    }
-
-    /**
-     * Pop the child fragment.
-     */
-    open fun popChild() {
-        mDelegate.popChild()
-    }
-
-    /**
-     * Pop the last fragment transition from the manager's fragment
-     * back stack.
-     *
-     * 出栈到目标fragment
-     *
-     * @param targetFragmentClass   目标fragment
-     * @param includeTargetFragment 是否包含该fragment
-     */
-    open fun popTo(targetFragmentClass: Class<*>, includeTargetFragment: Boolean) {
-        mDelegate.popTo(targetFragmentClass, includeTargetFragment)
-    }
-
-    /**
-     * If you want to begin another FragmentTransaction immediately after popTo(), use this method.
-     * 如果你想在出栈后, 立刻进行FragmentTransaction操作，请使用该方法
-     */
-    open fun popTo(targetFragmentClass: Class<*>, includeTargetFragment: Boolean, afterPopTransactionRunnable: Runnable) {
-        mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable)
-    }
-
-    open fun popTo(targetFragmentClass: Class<*>, includeTargetFragment: Boolean, afterPopTransactionRunnable: Runnable, popAnim: Int) {
-        mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, popAnim)
-    }
-
-    open fun popToChild(targetFragmentClass: Class<*>, includeTargetFragment: Boolean) {
-        mDelegate.popToChild(targetFragmentClass, includeTargetFragment)
-    }
-
-    open fun popToChild(targetFragmentClass: Class<*>, includeTargetFragment: Boolean, afterPopTransactionRunnable: Runnable) {
-        mDelegate.popToChild(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable)
-    }
-
-    open fun popToChild(targetFragmentClass: Class<*>, includeTargetFragment: Boolean, afterPopTransactionRunnable: Runnable, popAnim: Int) {
-        mDelegate.popToChild(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, popAnim)
-    }
-
-    /**
-     * 得到位于栈顶Fragment
-     */
-    open fun getTopFragment(): ISupportFragment {
-        return SupportHelper.getTopFragment(fragmentManager)
-    }
-
-    open fun getTopChildFragment(): ISupportFragment {
-        return SupportHelper.getTopFragment(childFragmentManager)
-    }
-
-    /**
-     * @return 位于当前Fragment的前一个Fragment
-     */
-    open fun getPreFragment(): ISupportFragment {
-        return SupportHelper.getPreFragment(this)
-    }
-
-    /**
-     * 获取栈内的fragment对象
-     */
-    open fun <T : ISupportFragment> findFragment(fragmentClass: Class<T>): T? {
-        return SupportHelper.findFragment(fragmentManager, fragmentClass)
-    }
-
-    /**
-     * 获取栈内的fragment对象
-     */
-    open fun <T : ISupportFragment> findChildFragment(fragmentClass: Class<T>): T? {
-        return SupportHelper.findFragment(childFragmentManager, fragmentClass)
     }
 }

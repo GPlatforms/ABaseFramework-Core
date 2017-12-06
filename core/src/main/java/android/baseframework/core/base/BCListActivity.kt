@@ -16,19 +16,28 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener
 
 open class BCListActivity<T> : BCActivity() {
 
-    protected val PAGE_LIMIT = 10
+    open val PAGE_LIMIT = 10
 
-    protected val mListData: MutableList<T> = arrayListOf()
+    open val mListData: MutableList<T> = arrayListOf()
 
-    protected val mRefreshLayout: SmartRefreshLayout by lazy { findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
-    protected val mRecyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerview) }
-    protected var mLayoutManager: RecyclerView.LayoutManager? = null
-    protected lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
-    protected lateinit var mDividerItemDecoration: DividerItemDecoration
-    protected lateinit var mStateView: BCStateView
+    open val mRefreshLayout: SmartRefreshLayout by lazy { findViewById<SmartRefreshLayout>(R.id.refreshLayout) }
+    open val mRecyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerview) }
+    open var mLayoutManager: RecyclerView.LayoutManager? = null
+    open lateinit var mAdapter: BaseQuickAdapter<T, BaseViewHolder>
+    open lateinit var mDividerItemDecoration: DividerItemDecoration
+    open lateinit var mStateView: BCStateView
 
-    protected var mPage = 1
-    protected var mIsLoadingMore = false
+    open var mPage = 1
+    open var mIsLoadingMore = false
+    open var mEmptyText = ""
+
+    open var mRefreshEnableRefresh = true
+    open var mRefreshEnableLoadMore = true
+    open var mRefreshEnableAutoMore = true
+    open var mRefreshEnableDivider = true
+    open var mDividerDrawable: Drawable = ColorDrawable(Color.parseColor("#66000000"))
+    open var mDividerWidth = -1
+    open var mDividerHeight = 0
 
     open fun initStateView() {
         mStateView = BCStateView(this).apply {
@@ -38,18 +47,18 @@ open class BCListActivity<T> : BCActivity() {
 
     open fun initListView() {
         with(mRefreshLayout) {
-            isEnableRefresh = isEnableRefresh
-            isEnableLoadmore = isEnableLoadMore()
-            isEnableAutoLoadmore = isEnableAutoLoadMore()
+            isEnableRefresh = mRefreshEnableRefresh
+            isEnableLoadmore = mRefreshEnableLoadMore
+            isEnableAutoLoadmore = mRefreshEnableAutoMore
 
             initLayoutManager()
 
             setOnRefreshLoadmoreListener(object : OnRefreshLoadmoreListener {
-                override fun onLoadmore(refreshlayout: RefreshLayout?) {
+                override fun onLoadmore(refreshlayout: RefreshLayout) {
                     moreData()
                 }
 
-                override fun onRefresh(refreshlayout: RefreshLayout?) {
+                override fun onRefresh(refreshlayout: RefreshLayout) {
                     resetPage()
                     requestData()
                 }
@@ -64,20 +73,20 @@ open class BCListActivity<T> : BCActivity() {
             mRecyclerView.layoutManager = it
         }
 
-        if (isEnableDivider()) {
-            mDividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, getDividerDrawable())
-            if (getDividerWidth() != -1) {
-                mDividerItemDecoration.setWidth(getDividerWidth())
+        if (mRefreshEnableDivider) {
+            mDividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, mDividerDrawable)
+            if (mDividerWidth != -1) {
+                mDividerItemDecoration.setWidth(mDividerWidth)
             }
-            if (getDividerHeight() != -1) {
-                mDividerItemDecoration.setHeight(getDividerHeight())
+            if (mDividerHeight != -1) {
+                mDividerItemDecoration.setHeight(mDividerHeight)
             }
             mRecyclerView.addItemDecoration(mDividerItemDecoration)
         }
     }
 
     open fun moreList(dataList: List<T>?) {
-        if (dataList == null || dataList.size == 0) {
+        if (dataList == null || dataList.isEmpty()) {
             noMorePage()
         } else if (dataList.size < PAGE_LIMIT) {
             noMorePage()
@@ -95,10 +104,6 @@ open class BCListActivity<T> : BCActivity() {
     open fun noMorePage() {
     }
 
-    open fun isLoadingMore(): Boolean {
-        return mIsLoadingMore
-    }
-
     open fun resetPage() {
         mPage = 1
     }
@@ -108,32 +113,4 @@ open class BCListActivity<T> : BCActivity() {
     open fun requestData() {}
 
     open fun moreData() {}
-
-    open fun getDividerDrawable(): Drawable {
-        return ColorDrawable(Color.parseColor("#66000000"))
-    }
-
-    open fun getDividerWidth(): Int {
-        return -1
-    }
-
-    open fun getDividerHeight(): Int {
-        return 0
-    }
-
-    open fun isEnableDivider(): Boolean {
-        return true
-    }
-
-    open fun isEnableRefresh(): Boolean {
-        return true
-    }
-
-    open fun isEnableLoadMore(): Boolean {
-        return true
-    }
-
-    open fun isEnableAutoLoadMore(): Boolean {
-        return true
-    }
 }
