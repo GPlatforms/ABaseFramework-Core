@@ -2,12 +2,11 @@ package android.baseframework.core.widget
 
 import android.baseframework.core.R
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.RelativeLayout
+import android.widget.*
 
 class BCStateView @JvmOverloads constructor(context: Context?,
                                             attrs: AttributeSet? = null,
@@ -17,53 +16,87 @@ class BCStateView @JvmOverloads constructor(context: Context?,
         init(attrs, defStyle)
     }
 
-    val mCustomContainer by lazy { findViewById<FrameLayout>(R.id.bc_state_custom_container) }
-    val mLoadingContainer by lazy { findViewById<View>(R.id.bc_state_loading_container) }
-    val mEmptyContainer by lazy { findViewById<View>(R.id.bc_state_empty_container) }
-    val mErrorContainer by lazy { findViewById<View>(R.id.bc_state_error_container) }
-    val mRetryView by lazy { findViewById<Button>(R.id.bc_state_error_retry) }
+    val customContainer by lazy { findViewById<FrameLayout>(R.id.bc_state_custom_container) }
+    val loadingContainer by lazy { findViewById<View>(R.id.bc_state_loading_container) }
+    val emptyContainer by lazy { findViewById<View>(R.id.bc_state_empty_container) }
+    val errorContainer by lazy { findViewById<View>(R.id.bc_state_error_container) }
+
+    val loadingProgressView by lazy { findViewById<ProgressBar>(R.id.bc_state_loading_progress) }
+    val loadingTextView by lazy { findViewById<TextView>(R.id.bc_state_loading_text) }
+    val emptyIconView by lazy { findViewById<ImageView>(R.id.bc_state_empty_icon) }
+    val emptyTextView by lazy { findViewById<TextView>(R.id.bc_state_empty_text) }
+    val errorIconView by lazy { findViewById<ImageView>(R.id.bc_state_error_icon) }
+    val errorTextView by lazy { findViewById<TextView>(R.id.bc_state_error_text) }
+    val errorRetryView by lazy { findViewById<Button>(R.id.bc_state_error_retry) }
+
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         LayoutInflater.from(context).inflate(R.layout.bc_view_state, this, true)
     }
 
     fun setCustomView(customView: View) {
-        mCustomContainer.removeAllViews()
-        mCustomContainer.addView(customView)
+        customContainer.removeAllViews()
+        customContainer.addView(customView)
     }
 
     fun showCustomView() {
-        mCustomContainer.visibility = View.VISIBLE
-        mLoadingContainer.visibility = View.GONE
-        mEmptyContainer.visibility = View.GONE
-        mErrorContainer.visibility = View.GONE
+        customContainer.visibility = View.VISIBLE
+        loadingContainer.visibility = View.GONE
+        emptyContainer.visibility = View.GONE
+        errorContainer.visibility = View.GONE
     }
 
     fun showLoading() {
-        mCustomContainer.visibility = View.GONE
-        mLoadingContainer.visibility = View.VISIBLE
-        mEmptyContainer.visibility = View.GONE
-        mErrorContainer.visibility = View.GONE
+        customContainer.visibility = View.GONE
+        loadingContainer.visibility = View.VISIBLE
+        emptyContainer.visibility = View.GONE
+        errorContainer.visibility = View.GONE
     }
 
     fun showEmpty() {
-        mCustomContainer.visibility = View.GONE
-        mLoadingContainer.visibility = View.GONE
-        mEmptyContainer.visibility = View.VISIBLE
-        mErrorContainer.visibility = View.GONE
+        customContainer.visibility = View.GONE
+        loadingContainer.visibility = View.GONE
+        emptyContainer.visibility = View.VISIBLE
+        errorContainer.visibility = View.GONE
     }
 
     fun showError() {
-        mCustomContainer.visibility = View.GONE
-        mLoadingContainer.visibility = View.GONE
-        mEmptyContainer.visibility = View.GONE
-        mErrorContainer.visibility = View.VISIBLE
+        customContainer.visibility = View.GONE
+        loadingContainer.visibility = View.GONE
+        emptyContainer.visibility = View.GONE
+        errorContainer.visibility = View.VISIBLE
     }
 
-    fun setRetryClickListener(listener: OnClickListener) {
-        mRetryView.setOnClickListener(listener)
+    fun setErrorRetryClickListener(listener: OnClickListener) {
+        errorRetryView.setOnClickListener(listener)
     }
 
+    fun setLoadingText(text: String) {
+        loadingTextView.text = text
+    }
 
+    fun setEmptyText(text: String) {
+        emptyTextView.text = text
+    }
+
+    fun setEmptyIcon(icon: Drawable) {
+        emptyIconView.setImageDrawable(icon)
+    }
+
+    fun setEmptyIcon(icon: Int) {
+        emptyIconView.setImageResource(icon)
+    }
+
+    fun setErrorText(text: String) {
+        errorTextView.text = text
+    }
+
+    fun setErrorIcon(icon: Drawable) {
+        errorIconView.setImageDrawable(icon)
+    }
+
+    fun setErrorIcon(icon: Int) {
+        errorIconView.setImageResource(icon)
+    }
 
 }

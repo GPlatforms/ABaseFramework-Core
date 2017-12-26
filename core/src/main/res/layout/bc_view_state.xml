@@ -19,7 +19,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <ProgressBar
+        <ProgressBar android:id="@+id/bc_state_loading_progress"
             style="@style/Widget.AppCompat.ProgressBar"
             android:indeterminateTint="#888888"
             android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <ImageView
+        <ImageView android:id="@+id/bc_state_empty_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/app_state_empty"/>
@@ -67,7 +67,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <ImageView
+        <ImageView android:id="@+id/bc_state_error_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/app_state_error"/>
